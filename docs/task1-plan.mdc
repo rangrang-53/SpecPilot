@@ -1,0 +1,97 @@
+# Task 1: 도메인 모델 구현 개발 계획
+
+## 구현 항목
+
+### 1. 기본 메시지 모델
+- Message 모델 (role, content, timestamp)
+- 역할 타입 정의 (user, assistant, system)
+
+### 2. 요구사항 상태 모델
+- RequirementState 모델
+- 사용자 입력 필드
+- 대화 히스토리 관리
+- 수집된 정보 저장소
+- 완전성 평가 결과
+- 반복 횟수 추적
+
+### 3. 에이전트 응답 모델
+- ConsultantResponse (질문 목록, 추론 과정)
+- JudgeResponse (승인/거부 결정, 완전성 점수, 누락 영역, 피드백)
+
+### 4. 기능 요구사항 모델
+- FunctionalRequirement (ID, 제목, 설명, 우선순위, 기술 제안)
+- 우선순위 타입 (High, Medium, Low)
+
+### 5. 기술 스택 추천 모델
+- TechStackRecommendation (카테고리, 기술 목록, 근거)
+
+### 6. 테스트 시나리오 모델
+- GherkinScenario (Given-When-Then 구조)
+
+### 7. SRS 문서 모델
+- SRSDocument (프로젝트명, 개요, 기능/비기능 요구사항, 기술 스택, 테스트 시나리오, 가정사항)
+
+---
+
+## 기술 스택 및 라이브러리
+
+### 핵심 프레임워크
+- **Pydantic**: 데이터 검증 및 모델링
+  - BaseModel 상속
+  - Field validator
+  - Type hints
+  - JSON schema 생성
+
+### 타입 시스템
+- **typing**: Generic types, Literal, Optional, List, Dict, Any
+
+### 표준 라이브러리
+- **datetime**: 타임스탬프 처리 (선택적)
+
+---
+
+## 개발 계획
+
+### Phase 1: 기본 모델 구현
+1. Message 모델 생성
+2. Message role validation 구현
+3. Message timestamp 필드 추가
+
+### Phase 2: 상태 관리 모델
+4. RequirementState 기본 구조 생성
+5. messages 리스트 필드 추가
+6. collected_info 딕셔너리 필드 추가
+7. questions 리스트 필드 추가
+8. is_complete 불린 필드 추가
+9. judge_feedback 문자열 필드 추가
+10. final_srs 문자열 필드 추가
+11. iteration_count 정수 필드 추가
+
+### Phase 3: 에이전트 응답 모델
+12. ConsultantResponse 모델 생성
+13. JudgeResponse 모델 생성
+14. JudgeResponse decision Literal 타입 정의
+
+### Phase 4: SRS 구성 요소 모델
+15. FunctionalRequirement 모델 생성
+16. priority Literal 타입 정의
+17. TechStackRecommendation 모델 생성
+18. GherkinScenario 모델 생성
+
+### Phase 5: 최종 문서 모델
+19. SRSDocument 모델 생성
+20. 모든 모델 JSON schema example 추가
+
+### Phase 6: 테스트
+21. Message 생성 및 검증 테스트
+22. Message role validation 테스트
+23. RequirementState 초기화 테스트
+24. RequirementState 메시지 추가 테스트
+25. ConsultantResponse 테스트
+26. JudgeResponse approve 케이스 테스트
+27. JudgeResponse reject 케이스 테스트
+28. FunctionalRequirement 생성 테스트
+29. TechStackRecommendation 생성 테스트
+30. GherkinScenario 생성 테스트
+31. SRSDocument 생성 테스트
+32. SRSDocument 전체 구조 테스트

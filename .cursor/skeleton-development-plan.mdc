@@ -1,0 +1,85 @@
+# SpecPilot 스켈레톤 코드 개발 계획
+
+## 개발 계획
+
+### Phase 1: 프로젝트 초기 설정
+1. 프로젝트 디렉토리 구조 생성
+2. 가상환경 설정 및 의존성 패키지 설치
+3. 환경 변수 설정 파일 생성
+4. Git 초기화 및 .gitignore 설정
+
+### Phase 2: Domain Layer (더미 데이터)
+5. Message 모델 정의
+6. RequirementState 모델 정의
+7. ConsultantResponse 모델 정의
+8. JudgeResponse 모델 정의
+9. FunctionalRequirement 모델 정의
+10. TechStackRecommendation 모델 정의
+11. GherkinScenario 모델 정의
+12. SRSDocument 모델 정의
+
+### Phase 3: Infrastructure Layer (더미 구현)
+13. 더미 OpenAI 클라이언트 구현
+14. 더미 Checkpointer 구현
+15. 더미 State Store 구현
+16. Consultant Prompt 템플릿 정의
+17. Judge Prompt 템플릿 정의
+18. Writer Prompt 템플릿 정의
+
+### Phase 4: Domain Agents (더미 응답)
+19. Consultant Agent 더미 구현
+20. Judge Agent 더미 구현
+21. Writer Agent 더미 구현
+
+### Phase 5: Infrastructure Graph (더미 워크플로우)
+22. LangGraph Workflow 더미 구현
+23. Executor 더미 구현
+24. Session Repository 더미 구현
+
+### Phase 6: Application Layer (더미 비즈니스 로직)
+25. Start Session Use Case 구현
+26. Continue Session Use Case 구현
+27. Generate SRS Use Case 구현
+28. Session Service 구현
+29. SRS Service 구현
+
+### Phase 7: Utils (더미 유틸리티)
+30. Info Extractor 더미 구현
+31. SRS Formatter 구현
+32. Quality Metrics 더미 구현
+
+### Phase 8: Presentation Layer API (더미 엔드포인트)
+33. Request Schemas 정의
+34. Response Schemas 정의
+35. Session Routes 구현
+36. SRS Routes 구현
+37. FastAPI Main 애플리케이션 설정
+
+### Phase 9: Frontend (더미 UI)
+38. Streamlit Main App 설정
+39. API Client 더미 구현
+40. Sidebar Component 구현
+41. Chat Interface Component 구현
+42. SRS Preview Component 구현
+43. Formatters 유틸리티 구현
+
+### Phase 10: Configuration
+44. Settings 파일 구성
+45. 환경별 설정 분리
+
+### Phase 11: Testing Setup
+46. Pytest 설정 파일 작성
+47. 테스트 디렉토리 구조 생성
+48. 더미 모델 테스트 작성
+49. 더미 에이전트 테스트 작성
+50. 더미 서비스 테스트 작성
+
+### Phase 12: Documentation & Deployment
+51. README 작성
+52. Requirements.txt 생성
+53. Docker 설정 파일 작성
+54. 로컬 실행 스크립트 작성
+
+### Phase 13: Integration Test
+55. 전체 플로우 통합 테스트
+56. 더미 데이터로 E2E 시나리오 검증

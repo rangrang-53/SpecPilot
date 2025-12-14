@@ -1,0 +1,28 @@
+# LangChain & LangGraph
+langchain
+langgraph
+langchain-openai
+
+# Web Framework
+fastapi
+uvicorn
+streamlit
+
+# Data Validation
+pydantic
+pydantic-settings
+
+# Utilities
+python-dotenv
+python-multipart
+
+# Testing
+pytest
+pytest-cov
+pytest-asyncio
+httpx
+
+# Code Quality
+black
+ruff
+mypy
