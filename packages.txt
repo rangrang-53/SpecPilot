@@ -1,0 +1,2 @@
+# System packages required for Streamlit deployment
+# Add any system-level dependencies here

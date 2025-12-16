@@ -1,12 +1,12 @@
-"""Dummy OpenAI Client"""
+"""Dummy Gemini Client"""
 
 
-class DummyOpenAIClient:
-    """더미 OpenAI 클라이언트 (테스트용)"""
+class DummyGeminiClient:
+    """더미 Gemini 클라이언트 (테스트용)"""
 
     def __init__(self):
         """초기화"""
-        self.model = "gpt-4o"
+        self.model = "gemini-3-pro"
 
     def generate(self, prompt: str) -> str:
         """
@@ -19,7 +19,7 @@ class DummyOpenAIClient:
             더미 응답 문자열
         """
         # 더미 응답 반환
-        return "This is a dummy response from OpenAI client."
+        return "This is a dummy response from Gemini client."
 
     def generate_structured(self, prompt: str, schema: dict) -> dict:
         """

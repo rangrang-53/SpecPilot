@@ -38,7 +38,7 @@ SpecPilot은 모호한 아이디어를 명확한 기술 명세서(SRS)로 전환
 
 - **Backend**: Python 3.11+, FastAPI, Pydantic
 - **Frontend**: Streamlit
-- **AI**: OpenAI GPT-4o (더미 구현)
+- **AI**: Google Gemini 3 Pro (더미 구현)
 - **Orchestration**: LangGraph, LangChain
 - **Testing**: Pytest
 
@@ -60,7 +60,7 @@ pip install -r requirements.txt
 
 # 환경 변수 설정
 cp .env.example .env
-# .env 파일을 편집하여 OPENAI_API_KEY 설정
+# .env 파일을 편집하여 GOOGLE_API_KEY 설정
 ```
 
 ### 2. 백엔드 실행
@@ -81,17 +81,30 @@ streamlit run frontend/app.py
 
 앱 접속: http://localhost:8501
 
-### 4. Docker로 실행
+### 4. Streamlit Community Cloud에 배포
+
+1. GitHub 저장소에 코드 푸시
+2. [Streamlit Community Cloud](https://streamlit.io/cloud) 접속
+3. "New app" 클릭
+4. 저장소 선택 및 메인 파일 경로 입력: `frontend/app.py`
+5. Advanced settings에서 환경 변수 추가:
+   - `GOOGLE_API_KEY`: 본인의 Gemini API 키
+   - `BACKEND_URL`: 백엔드 API URL (또는 로컬 테스트)
+6. Deploy 클릭
+
+**참고**: Streamlit 배포 시 백엔드와 프론트엔드가 통합된 구조로 작동하므로, `frontend/app.py`만 배포하면 됩니다.
+
+### 5. Docker로 실행 (선택사항)
+
+Docker 파일은 `docker/` 폴더에 보관되어 있습니다.
+자세한 사용법은 [docker/README.md](docker/README.md)를 참고하세요.
 
 ```bash
+# Docker 파일 복사
+cp docker/Dockerfile.backend docker/Dockerfile.frontend docker/docker-compose.yml ./
+
 # Docker Compose로 전체 스택 실행
 docker-compose up --build
-
-# 백그라운드 실행
-docker-compose up -d
-
-# 종료
-docker-compose down
 ```
 
 ## 🧪 테스트

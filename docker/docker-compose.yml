@@ -8,8 +8,8 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - MODEL_NAME=gpt-4o
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - MODEL_NAME=gemini-3-pro
       - API_HOST=0.0.0.0
       - API_PORT=8000
     volumes:

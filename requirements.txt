@@ -1,7 +1,8 @@
 # LangChain & LangGraph
 langchain
 langgraph
-langchain-openai
+langchain-google-genai
+google-generativeai
 
 # Web Framework
 fastapi

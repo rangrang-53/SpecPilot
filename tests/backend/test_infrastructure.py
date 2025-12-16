@@ -1,21 +1,21 @@
 """Infrastructure Layer Test Suite"""
 import pytest
-from backend.infrastructure.llm.openai_client import DummyOpenAIClient
+from backend.infrastructure.llm.gemini_client import DummyGeminiClient
 from backend.infrastructure.persistence.checkpointer import DummyCheckpointer
 from backend.infrastructure.persistence.state_store import DummyStateStore
 
 
-class TestDummyOpenAIClient:
-    """더미 OpenAI 클라이언트 테스트"""
+class TestDummyGeminiClient:
+    """더미 Gemini 클라이언트 테스트"""
 
     def test_client_initialization(self):
         """클라이언트 초기화 테스트"""
-        client = DummyOpenAIClient()
+        client = DummyGeminiClient()
         assert client is not None
 
     def test_generate_response(self):
         """더미 응답 생성 테스트"""
-        client = DummyOpenAIClient()
+        client = DummyGeminiClient()
         response = client.generate("test prompt")
         assert isinstance(response, str)
         assert len(response) > 0

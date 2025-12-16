@@ -39,15 +39,17 @@ class TestDummyWorkflow:
         state = RequirementState(
             user_input="쇼핑몰 프로젝트",
             collected_info={
-                "core_features": ["상품 관리", "결제"],
-                "payment_methods": ["카드"],
+                "project_name": "BuyGo",
+                "payment": "카드",
+                "scale": "200건",
+                "authentication": "소셜 로그인",
                 "deployment": "AWS"
             }
         )
         result = workflow.run(state)
 
         assert isinstance(result, RequirementState)
-        # 정보가 충분하므로 is_complete는 True
+        # 정보가 충분하므로 (5개 이상) is_complete는 True
         assert result.is_complete is True
         # Writer가 SRS를 생성했어야 함
         assert result.final_srs is not None

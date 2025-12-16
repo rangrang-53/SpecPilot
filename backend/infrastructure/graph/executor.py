@@ -4,6 +4,7 @@ from typing import Optional
 from backend.domain.models.state import RequirementState, Message
 from backend.infrastructure.graph.workflow import DummyWorkflow
 from backend.infrastructure.graph.session_repository import DummySessionRepository
+from backend.utils.info_extractor import InfoExtractor
 
 
 # 전역 공유 repository (싱글톤 패턴)
@@ -21,6 +22,7 @@ class DummyExecutor:
         """Executor 초기화"""
         self.workflow = DummyWorkflow()
         self.repository = _shared_repository
+        self.info_extractor = InfoExtractor()
 
     def create_session(self) -> str:
         """
@@ -51,15 +53,33 @@ class DummyExecutor:
             # 기존 세션이면 user_input 업데이트
             state.user_input = user_input
 
-        # 2. 사용자 메시지 추가
+        # 2. 사용자 입력에서 정보 추출 및 collected_info 업데이트
+        # 순서대로 질문에 답변하는 방식이므로, 현재 질문에 대한 답변만 저장
+        question_sequence = [
+            "project_name",
+            "payment",
+            "scale",
+            "authentication",
+            "deployment"
+        ]
+
+        # 기존 세션이면 다음 카테고리에 답변 저장
+        if state.iteration_count > 0:
+            answered_count = len(state.collected_info)
+            if answered_count < len(question_sequence):
+                next_category = question_sequence[answered_count]
+                # 사용자 입력을 그대로 저장 (순서대로 답변하므로)
+                state.collected_info[next_category] = user_input
+
+        # 3. 사용자 메시지 추가
         state.messages.append(
             Message(role="user", content=user_input)
         )
 
-        # 3. 워크플로우 실행
+        # 4. 워크플로우 실행
         state = self.workflow.run(state)
 
-        # 4. 상태 저장
+        # 5. 상태 저장
         self.repository.save(session_id, state)
 
         return state

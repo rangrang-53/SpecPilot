@@ -12,6 +12,9 @@ COPY backend ./backend
 COPY config ./config
 COPY .env.example .env
 
+# 환경 변수 설정
+ENV MODEL_NAME=gemini-3-pro
+
 # 포트 노출
 EXPOSE 8000
 

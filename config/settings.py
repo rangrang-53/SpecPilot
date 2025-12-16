@@ -6,9 +6,9 @@ from typing import Optional
 class Settings(BaseSettings):
     """애플리케이션 설정"""
 
-    # OpenAI 설정
-    openai_api_key: str = "dummy-api-key"
-    model_name: str = "gpt-4o"
+    # Google Gemini 설정
+    google_api_key: str = "dummy-api-key"
+    model_name: str = "gemini-3-pro"
     temperature: float = 0.7
 
     # 워크플로우 설정
