@@ -49,13 +49,16 @@ class DummyExecutor:
         state = self.repository.load(session_id)
         if state is None:
             state = RequirementState(user_input=user_input)
+            # 첫 번째 입력은 "initial_request"로 저장
+            state.collected_info["initial_request"] = user_input
         else:
             # 기존 세션이면 user_input 업데이트
             state.user_input = user_input
 
-        # 2. 사용자 입력에서 정보 추출 및 collected_info 업데이트
-        extracted_info = self.info_extractor.extract(user_input, state.collected_info)
-        state.collected_info.update(extracted_info)
+            # 2. 모든 사용자 응답을 collected_info에 저장 (카테고리 자동 생성)
+            # iteration 횟수를 기반으로 키 생성
+            response_key = f"response_{state.iteration_count}"
+            state.collected_info[response_key] = user_input
 
         # 3. 사용자 메시지 추가
         state.messages.append(
