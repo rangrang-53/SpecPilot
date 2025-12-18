@@ -1,5 +1,6 @@
 """Application Settings"""
 from pydantic_settings import BaseSettings
+from pydantic import ConfigDict
 from typing import Optional
 
 
@@ -8,7 +9,7 @@ class Settings(BaseSettings):
 
     # Google Gemini 설정
     google_api_key: str = "dummy-api-key"
-    model_name: str = "gemini-3-pro"
+    model_name: str = "gemini-1.5-pro"
     temperature: float = 0.7
 
     # 워크플로우 설정
@@ -21,14 +22,22 @@ class Settings(BaseSettings):
 
     # Frontend 설정
     frontend_port: int = 8501
+    streamlit_port: int = 8501
     backend_url: str = "http://localhost:8000"
+
+    # Session 설정
+    session_timeout: int = 3600
 
     # 로깅 설정
     log_level: str = "INFO"
+    debug: bool = True
 
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
+    model_config = ConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",  # .env에 추가 필드가 있어도 무시
+        protected_namespaces=()  # model_ prefix 허용
+    )
 
 
 # 전역 설정 인스턴스
