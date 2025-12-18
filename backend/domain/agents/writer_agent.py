@@ -388,6 +388,220 @@ def _generate_test_scenarios(
     return scenarios
 
 
+def _generate_functional_requirements(
+    user_input: str,
+    collected_info: dict,
+    auth_info: str,
+    payment_info: str
+) -> List[FunctionalRequirement]:
+    """
+    프로젝트 특성에 맞는 기능 요구사항을 동적으로 생성
+
+    Args:
+        user_input: 사용자 초기 입력
+        collected_info: 수집된 정보
+        auth_info: 인증 정보
+        payment_info: 결제 정보
+
+    Returns:
+        기능 요구사항 리스트
+    """
+    requirements = []
+    input_lower = user_input.lower()
+    fr_id = 1
+
+    # 프로젝트 유형 분석
+    is_ecommerce = any(keyword in input_lower for keyword in ["쇼핑", "이커머스", "커머스", "주문", "장바구니"])
+    is_social = any(keyword in input_lower for keyword in ["소셜", "sns", "커뮤니티", "게시글", "댓글"])
+    is_booking = any(keyword in input_lower for keyword in ["예약", "예매", "숙박", "호텔"])
+    is_intranet = any(keyword in input_lower for keyword in ["인트라넷", "사내", "그룹웨어", "전자결재"])
+    is_content = any(keyword in input_lower for keyword in ["블로그", "콘텐츠", "게시판"])
+    is_realtime = any(keyword in input_lower for keyword in ["실시간", "채팅", "알림"])
+    is_delivery = any(keyword in input_lower for keyword in ["배달", "배송", "음식"])
+
+    # 1. 인증은 거의 모든 프로젝트에 필요
+    if auth_info and auth_info != "지정되지 않음":
+        requirements.append(FunctionalRequirement(
+            id=f"FR-{fr_id:03d}",
+            title="사용자 인증 및 권한 관리",
+            description=f"{auth_info} 방식으로 사용자 인증을 구현하고, 역할 기반 접근 제어(RBAC)를 통해 권한을 관리합니다.",
+            priority="High",
+            tech_suggestions=["JWT", "OAuth2.0", "Role-Based Access Control"]
+        ))
+        fr_id += 1
+
+    # 2. 인트라넷 특화 기능
+    if is_intranet:
+        requirements.extend([
+            FunctionalRequirement(
+                id=f"FR-{fr_id:03d}",
+                title="조직도 및 직원 정보 관리",
+                description="부서별 조직도를 표시하고, 직원 정보(연락처, 직급, 소속 부서)를 조회 및 검색할 수 있습니다.",
+                priority="High",
+                tech_suggestions=["Tree Structure", "Elasticsearch", "LDAP 연동"]
+            ),
+            FunctionalRequirement(
+                id=f"FR-{fr_id+1:03d}",
+                title="전자결재 시스템",
+                description="휴가 신청, 지출 결의, 업무 보고 등의 결재 문서를 작성하고, 결재선에 따라 승인/반려를 처리합니다.",
+                priority="High",
+                tech_suggestions=["Workflow Engine", "PDF 생성", "전자서명"]
+            ),
+            FunctionalRequirement(
+                id=f"FR-{fr_id+2:03d}",
+                title="사내 게시판 및 공지사항",
+                description="전사 공지, 부서별 게시판, 경조사 알림 등을 게시하고 조회할 수 있습니다.",
+                priority="Medium",
+                tech_suggestions=["CMS", "알림 푸시", "파일 첨부"]
+            ),
+            FunctionalRequirement(
+                id=f"FR-{fr_id+3:03d}",
+                title="회의실 예약 시스템",
+                description="회의실 예약 현황을 확인하고, 시간대별로 회의실을 예약하거나 취소할 수 있습니다.",
+                priority="Medium",
+                tech_suggestions=["캘린더 UI", "실시간 예약 충돌 방지", "Outlook 연동"]
+            ),
+        ])
+        fr_id += 4
+
+    # 3. 이커머스 특화 기능
+    elif is_ecommerce:
+        requirements.extend([
+            FunctionalRequirement(
+                id=f"FR-{fr_id:03d}",
+                title="상품 관리",
+                description="상품 등록, 수정, 삭제, 재고 관리 및 카테고리 분류를 수행합니다.",
+                priority="High",
+                tech_suggestions=["Product Catalog API", "이미지 최적화", "재고 알림"]
+            ),
+            FunctionalRequirement(
+                id=f"FR-{fr_id+1:03d}",
+                title="장바구니 및 주문 처리",
+                description="사용자가 상품을 장바구니에 담고, 주문 및 결제를 진행할 수 있습니다.",
+                priority="High",
+                tech_suggestions=["세션 관리", "주문 상태 관리", "재고 차감 로직"]
+            ),
+            FunctionalRequirement(
+                id=f"FR-{fr_id+2:03d}",
+                title="결제 시스템",
+                description=f"{payment_info} 결제 수단을 지원하고, 결제 내역을 기록합니다.",
+                priority="High",
+                tech_suggestions=["PG 연동", "결제 취소/환불", "영수증 발행"]
+            ),
+        ])
+        fr_id += 3
+
+    # 4. 소셜/커뮤니티 특화 기능
+    elif is_social:
+        requirements.extend([
+            FunctionalRequirement(
+                id=f"FR-{fr_id:03d}",
+                title="게시글 작성 및 관리",
+                description="사용자가 텍스트, 이미지, 동영상을 포함한 게시글을 작성하고 수정/삭제할 수 있습니다.",
+                priority="High",
+                tech_suggestions=["Rich Text Editor", "이미지/동영상 업로드", "해시태그"]
+            ),
+            FunctionalRequirement(
+                id=f"FR-{fr_id+1:03d}",
+                title="댓글 및 좋아요",
+                description="게시글에 댓글을 달고, 좋아요/공유 기능을 제공합니다.",
+                priority="Medium",
+                tech_suggestions=["실시간 업데이트", "알림 시스템", "카운터 최적화"]
+            ),
+            FunctionalRequirement(
+                id=f"FR-{fr_id+2:03d}",
+                title="팔로우 및 피드",
+                description="다른 사용자를 팔로우하고, 팔로우한 사용자의 게시글을 피드로 확인할 수 있습니다.",
+                priority="High",
+                tech_suggestions=["팔로우 그래프", "피드 알고리즘", "무한 스크롤"]
+            ),
+        ])
+        fr_id += 3
+
+    # 5. 예약 시스템 특화 기능
+    elif is_booking:
+        requirements.extend([
+            FunctionalRequirement(
+                id=f"FR-{fr_id:03d}",
+                title="날짜/시간 검색 및 예약",
+                description="사용자가 원하는 날짜와 시간대를 검색하고 예약할 수 있습니다.",
+                priority="High",
+                tech_suggestions=["캘린더 UI", "실시간 재고 확인", "중복 예약 방지"]
+            ),
+            FunctionalRequirement(
+                id=f"FR-{fr_id+1:03d}",
+                title="예약 확인 및 취소",
+                description="예약 내역을 조회하고, 취소 정책에 따라 예약을 취소할 수 있습니다.",
+                priority="High",
+                tech_suggestions=["이메일/SMS 알림", "환불 처리", "취소 수수료 계산"]
+            ),
+        ])
+        fr_id += 2
+
+    # 6. 배달 서비스 특화 기능
+    elif is_delivery:
+        requirements.extend([
+            FunctionalRequirement(
+                id=f"FR-{fr_id:03d}",
+                title="음식점 및 메뉴 검색",
+                description="위치 기반으로 음식점을 검색하고, 메뉴를 조회할 수 있습니다.",
+                priority="High",
+                tech_suggestions=["지도 API", "위치 기반 검색", "필터링"]
+            ),
+            FunctionalRequirement(
+                id=f"FR-{fr_id+1:03d}",
+                title="주문 및 배달 추적",
+                description="음식을 주문하고, 실시간으로 배달 상태를 추적할 수 있습니다.",
+                priority="High",
+                tech_suggestions=["실시간 위치 추적", "푸시 알림", "배달 상태 관리"]
+            ),
+        ])
+        fr_id += 2
+
+    # 7. 실시간 기능이 필요한 경우
+    if is_realtime:
+        requirements.append(FunctionalRequirement(
+            id=f"FR-{fr_id:03d}",
+            title="실시간 채팅 및 알림",
+            description="사용자 간 실시간 메시지 전송 및 시스템 알림을 제공합니다.",
+            priority="High",
+            tech_suggestions=["WebSocket", "Socket.io", "Redis Pub/Sub", "FCM"]
+        ))
+        fr_id += 1
+
+    # 8. 결제 기능이 명시된 경우 (아직 추가되지 않았다면)
+    if payment_info and payment_info != "지정되지 않음" and not any(req.title == "결제 시스템" for req in requirements):
+        requirements.append(FunctionalRequirement(
+            id=f"FR-{fr_id:03d}",
+            title="결제 처리",
+            description=f"{payment_info} 결제 수단을 지원하고, 결제 내역을 관리합니다.",
+            priority="High",
+            tech_suggestions=["PG 연동", "결제 게이트웨이", "보안 결제"]
+        ))
+        fr_id += 1
+
+    # 9. 기본 CRUD 기능 (특정 프로젝트 유형이 없을 경우만)
+    if not requirements or len(requirements) < 2:
+        requirements.extend([
+            FunctionalRequirement(
+                id=f"FR-{fr_id:03d}",
+                title="데이터 조회",
+                description="사용자가 데이터 목록을 조회하고 상세 정보를 확인할 수 있습니다.",
+                priority="Medium",
+                tech_suggestions=["REST API", "페이지네이션", "검색 필터"]
+            ),
+            FunctionalRequirement(
+                id=f"FR-{fr_id+1:03d}",
+                title="데이터 생성 및 수정",
+                description="사용자가 새로운 데이터를 생성하고, 기존 데이터를 수정할 수 있습니다.",
+                priority="Medium",
+                tech_suggestions=["Form Validation", "REST API", "에러 핸들링"]
+            ),
+        ])
+
+    return requirements
+
+
 def writer_agent(state: RequirementState) -> RequirementState:
     """
     최종 SRS 문서를 생성하는 에이전트 (더미)
@@ -424,6 +638,14 @@ def writer_agent(state: RequirementState) -> RequirementState:
         "가용성: 99.9% uptime"
     ]
 
+    # 동적 기능 요구사항 생성 - 프로젝트 유형에 맞춰 생성
+    functional_requirements_list = _generate_functional_requirements(
+        state.user_input,
+        state.collected_info,
+        auth_info,
+        payment_info
+    )
+
     # 동적 기술 스택 생성 - 프로젝트 규모와 요구사항에 따라 결정
     tech_stack_list = _generate_tech_stack(
         state.user_input,
@@ -453,29 +675,7 @@ def writer_agent(state: RequirementState) -> RequirementState:
     dummy_srs = SRSDocument(
         project_name=project_name,
         overview=overview,
-        functional_requirements=[
-            FunctionalRequirement(
-                id="FR-001",
-                title="사용자 인증",
-                description=f"{auth_info} 방식으로 사용자 인증을 구현합니다.",
-                priority="High",
-                tech_suggestions=["JWT", "OAuth2.0"]
-            ),
-            FunctionalRequirement(
-                id="FR-002",
-                title="결제 처리",
-                description=f"{payment_info} 결제 수단을 지원합니다.",
-                priority="High",
-                tech_suggestions=["PG 연동", "결제 게이트웨이"]
-            ),
-            FunctionalRequirement(
-                id="FR-003",
-                title="데이터 관리",
-                description="사용자가 데이터를 생성, 조회, 수정, 삭제할 수 있습니다.",
-                priority="Medium",
-                tech_suggestions=["REST API", "PostgreSQL"]
-            ),
-        ],
+        functional_requirements=functional_requirements_list,
         non_functional_requirements=nfr_list,
         tech_stack=tech_stack_list,
         test_scenarios=test_scenarios_list,
