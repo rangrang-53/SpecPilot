@@ -36,6 +36,9 @@ class GeminiClient:
         # 모델 초기화
         self.model_name = settings.model_name
         self.temperature = settings.temperature
+
+        print(f"[DEBUG] Initializing Gemini with model: {self.model_name}")
+
         self.model = genai.GenerativeModel(
             model_name=self.model_name,
             generation_config={

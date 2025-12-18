@@ -33,28 +33,21 @@ def consultant_agent(state: RequirementState) -> RequirementState:
             user_message=user_prompt
         )
 
-        # 응답을 줄 단위로 나누고 질문만 추출
-        questions = []
-        for line in response.split('\n'):
-            line = line.strip()
-            # 번호가 있는 질문만 추출 (예: "1. 질문내용", "- 질문내용")
-            if line and (
-                line[0].isdigit() or
-                line.startswith('-') or
-                line.startswith('*') or
-                line.startswith('•')
-            ):
-                # 번호 및 마크다운 기호 제거
-                cleaned = line.lstrip('0123456789.-*• ').strip()
-                if cleaned and '?' in cleaned:  # 질문 형태만
-                    questions.append(cleaned)
+        print(f"🔍 [DEBUG] Consultant LLM Response: {response}")
+        print(f"🔍 [DEBUG] Collected info: {state.collected_info}")
 
-        # 질문이 없으면 기본 질문 사용
-        if not questions:
+        # 응답 파싱: 프롬프트가 "질문만 출력"하라고 했으므로 전체 응답을 질문으로 사용
+        response_clean = response.strip()
+
+        # 만약 질문 형태가 아니면 (물음표가 없으면) 기본 질문 사용
+        if '?' in response_clean or '？' in response_clean:
+            # 여러 줄이 있으면 첫 번째 줄만 사용
+            first_line = response_clean.split('\n')[0].strip()
+            questions = [first_line]
+        else:
+            # 질문 형태가 아니면 fallback
+            print(f"⚠️ [DEBUG] LLM response is not a question: {response_clean}")
             questions = ["프로젝트에 대해 더 자세히 설명해주실 수 있나요?"]
-
-        # 첫 번째 질문만 사용
-        questions = [questions[0]]
 
         # State 업데이트
         state.questions = questions
