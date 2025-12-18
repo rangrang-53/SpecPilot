@@ -54,22 +54,8 @@ class DummyExecutor:
             state.user_input = user_input
 
         # 2. 사용자 입력에서 정보 추출 및 collected_info 업데이트
-        # 순서대로 질문에 답변하는 방식이므로, 현재 질문에 대한 답변만 저장
-        question_sequence = [
-            "project_name",
-            "payment",
-            "scale",
-            "authentication",
-            "deployment"
-        ]
-
-        # 기존 세션이면 다음 카테고리에 답변 저장
-        if state.iteration_count > 0:
-            answered_count = len(state.collected_info)
-            if answered_count < len(question_sequence):
-                next_category = question_sequence[answered_count]
-                # 사용자 입력을 그대로 저장 (순서대로 답변하므로)
-                state.collected_info[next_category] = user_input
+        extracted_info = self.info_extractor.extract(user_input, state.collected_info)
+        state.collected_info.update(extracted_info)
 
         # 3. 사용자 메시지 추가
         state.messages.append(

@@ -20,29 +20,32 @@ class InfoExtractor:
             "features": ["기능", "쇼핑몰", "커머스", "장바구니", "상품"],
         }
 
-    def extract(self, text: str) -> Dict[str, Any]:
+    def extract(self, text: str, existing_info: Dict[str, Any] = None) -> Dict[str, Any]:
         """
         텍스트에서 정보 추출
 
         Args:
             text: 사용자 입력 텍스트
+            existing_info: 기존에 수집된 정보 (중복 방지용)
 
         Returns:
             추출된 정보 딕셔너리
         """
+        if existing_info is None:
+            existing_info = {}
+
         result = {}
 
+        # 각 카테고리별로 키워드 매칭
         for category, keywords in self.keywords.items():
+            # 이미 수집된 정보는 건너뛰기
+            if category in existing_info:
+                continue
+
             for keyword in keywords:
                 if keyword in text:
-                    if category not in result:
-                        result[category] = []
-                    if keyword not in result[category]:
-                        result[category].append(keyword)
-
-        # 숫자 추출 (동시 접속자, 주문 건수 등)
-        numbers = re.findall(r'\d+', text)
-        if numbers and "scale" in result:
-            result["scale_numbers"] = [int(n) for n in numbers]
+                    # 첫 번째 매칭된 키워드만 저장 (문자열로)
+                    result[category] = text.strip()
+                    break
 
         return result
