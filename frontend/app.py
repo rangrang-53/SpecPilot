@@ -1,8 +1,8 @@
 """SpecPilot Streamlit Frontend - Based on UX Wireframe"""
 import streamlit as st
 import json
-from frontend.services.api_client import APIClient
-from backend.utils.srs_formatter import SRSFormatter
+from services.api_client import APIClient
+from utils.srs_formatter import SRSFormatter
 
 
 # 페이지 설정

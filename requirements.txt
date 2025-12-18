@@ -4,9 +4,7 @@ langgraph
 langchain-google-genai
 google-generativeai
 
-# Web Framework
-fastapi
-uvicorn
+# Web Framework (Streamlit only for single deployment)
 streamlit
 
 # Data Validation
@@ -15,15 +13,14 @@ pydantic-settings
 
 # Utilities
 python-dotenv
-python-multipart
 
-# Testing
-pytest
-pytest-cov
-pytest-asyncio
-httpx
+# Testing (optional - not needed for deployment)
+# pytest
+# pytest-cov
+# pytest-asyncio
+# httpx
 
-# Code Quality
-black
-ruff
-mypy
+# Code Quality (optional - not needed for deployment)
+# black
+# ruff
+# mypy

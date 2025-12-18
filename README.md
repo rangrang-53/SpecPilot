@@ -198,11 +198,16 @@ streamlit run frontend/app.py
 3. "New app" 클릭
 4. 저장소 선택 및 메인 파일 경로 입력: `frontend/app.py`
 5. Advanced settings에서 환경 변수 추가:
-   - `GOOGLE_API_KEY`: 본인의 Gemini API 키
-   - `BACKEND_URL`: 백엔드 API URL (또는 로컬 테스트)
+   ```toml
+   # Streamlit Secrets 설정 (.streamlit/secrets.toml)
+   BACKEND_URL = "http://your-backend-url.com"  # 백엔드 API URL
+   ```
 6. Deploy 클릭
 
-**참고**: Streamlit 배포 시 백엔드와 프론트엔드가 통합된 구조로 작동하므로, `frontend/app.py`만 배포하면 됩니다.
+**중요 사항**:
+- 프론트엔드만 배포할 경우, 백엔드 API 서버가 별도로 필요합니다
+- 백엔드를 Railway, Render, Fly.io 등에 배포하고 URL을 `BACKEND_URL`에 설정하세요
+- 자세한 배포 가이드는 [README-DEPLOY.md](README-DEPLOY.md)를 참고하세요
 
 ### 5. Docker로 실행 (선택사항)
 

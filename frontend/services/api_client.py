@@ -1,23 +1,30 @@
-"""API Client for Backend Communication"""
-import requests
+"""API Client - Direct Backend Integration for Streamlit Deployment"""
+import sys
+import os
 from typing import Dict, Any
+
+# 프로젝트 루트를 sys.path에 추가 (Streamlit Cloud 배포용)
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+
+from backend.application.use_cases.start_session_use_case import StartSessionUseCase
+from backend.application.use_cases.continue_session_use_case import ContinueSessionUseCase
+from backend.application.use_cases.get_srs_use_case import GetSRSUseCase
 
 
 class APIClient:
     """
-    Backend API와 통신하는 클라이언트
+    백엔드 직접 통합 클라이언트 (Streamlit 단일 배포용)
 
-    Note: 실제 환경에서는 환경 변수에서 URL을 가져와야 함
+    HTTP API 대신 백엔드 Use Case를 직접 호출합니다.
     """
 
-    def __init__(self, base_url: str = "http://localhost:8000"):
-        """
-        API Client 초기화
-
-        Args:
-            base_url: Backend API 기본 URL
-        """
-        self.base_url = base_url
+    def __init__(self):
+        """API Client 초기화"""
+        self.start_session_uc = StartSessionUseCase()
+        self.continue_session_uc = ContinueSessionUseCase()
+        self.get_srs_uc = GetSRSUseCase()
 
     def start_session(self, initial_input: str) -> Dict[str, Any]:
         """
@@ -29,12 +36,7 @@ class APIClient:
         Returns:
             세션 정보
         """
-        response = requests.post(
-            f"{self.base_url}/api/session/start",
-            json={"initial_input": initial_input}
-        )
-        response.raise_for_status()
-        return response.json()
+        return self.start_session_uc.execute(initial_input)
 
     def continue_session(self, session_id: str, user_response: str) -> Dict[str, Any]:
         """
@@ -47,12 +49,7 @@ class APIClient:
         Returns:
             업데이트된 세션 정보
         """
-        response = requests.post(
-            f"{self.base_url}/api/session/continue",
-            json={"session_id": session_id, "user_response": user_response}
-        )
-        response.raise_for_status()
-        return response.json()
+        return self.continue_session_uc.execute(session_id, user_response)
 
     def get_srs(self, session_id: str) -> Dict[str, Any]:
         """
@@ -64,9 +61,7 @@ class APIClient:
         Returns:
             SRS 문서
         """
-        response = requests.get(f"{self.base_url}/api/srs/{session_id}")
-        response.raise_for_status()
-        return response.json()
+        return self.get_srs_uc.execute(session_id)
 
     def get_session_status(self, session_id: str) -> Dict[str, Any]:
         """
@@ -78,9 +73,11 @@ class APIClient:
         Returns:
             세션 상태
         """
-        response = requests.get(f"{self.base_url}/api/session/{session_id}/status")
-        response.raise_for_status()
-        return response.json()
+        result = self.get_srs_uc.execute(session_id)
+        return {
+            "is_complete": result.get("is_complete", False),
+            "session_id": session_id
+        }
 
     def reset_session(self, session_id: str) -> Dict[str, Any]:
         """
@@ -92,6 +89,5 @@ class APIClient:
         Returns:
             리셋 결과
         """
-        response = requests.post(f"{self.base_url}/api/session/{session_id}/reset")
-        response.raise_for_status()
-        return response.json()
+        # 세션 리셋은 새 세션을 시작하는 것으로 대체
+        return {"message": "Session reset - please start a new session"}
