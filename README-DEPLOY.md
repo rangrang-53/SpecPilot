@@ -16,16 +16,35 @@ Main file path: frontend/app.py
 Python version: 3.11 (또는 3.10)
 ```
 
-### 2. 환경 변수 설정 (선택사항)
+### 2. Google Gemini API 키 설정 (필수)
 
-현재는 더미 데이터로 작동하므로 특별한 환경 변수가 필요하지 않습니다.
+SpecPilot은 Google Gemini API를 사용합니다. API 키를 받아야 합니다:
 
-향후 실제 LLM API를 사용할 경우, Streamlit Cloud 대시보드의 **Settings > Secrets**에서:
+1. **API 키 받기** (무료!):
+   - https://makersuite.google.com/app/apikey 접속
+   - Google 계정으로 로그인
+   - "Create API Key" 클릭
+   - API 키 복사
+
+2. **Streamlit Cloud에서 설정**:
+   - Streamlit Cloud 대시보드의 **Settings > Secrets** 메뉴
+   - 다음 내용 추가:
 
 ```toml
-# Google Gemini API (향후 사용 시)
-GOOGLE_API_KEY = "your-api-key-here"
+# Google Gemini API Key (필수)
+GOOGLE_API_KEY = "your-actual-api-key-here"
 ```
+
+3. **로컬 개발 시**:
+   ```bash
+   # .env 파일 생성
+   cp .env.example .env
+
+   # .env 파일 편집하여 API 키 추가
+   GOOGLE_API_KEY=your-actual-api-key-here
+   ```
+
+**중요**: API 키 없이도 작동하지만, 더미 응답만 반환됩니다!
 
 ### 3. 로컬 테스트
 

@@ -1,10 +1,15 @@
-"""Consultant Agent - 더미 구현"""
+"""Consultant Agent - LLM 기반 질문 생성"""
 from backend.domain.models.state import RequirementState, Message
+from backend.infrastructure.llm.gemini_client import get_gemini_client
+from backend.infrastructure.prompts.consultant_prompt import (
+    CONSULTANT_SYSTEM_PROMPT,
+    get_consultant_prompt
+)
 
 
 def consultant_agent(state: RequirementState) -> RequirementState:
     """
-    사용자 입력을 분석하고 추가 질문을 생성하는 에이전트 (더미)
+    사용자 입력을 분석하고 추가 질문을 생성하는 에이전트 (LLM 기반)
 
     Args:
         state: 현재 요구사항 상태
@@ -12,35 +17,77 @@ def consultant_agent(state: RequirementState) -> RequirementState:
     Returns:
         업데이트된 요구사항 상태
     """
-    # 순서대로 질문할 질문 리스트 (순서 유지를 위해 리스트 사용)
-    question_sequence = [
-        ("project_name", "프로젝트 이름은 무엇인가요?"),
-        ("payment", "결제 수단은 어떤 것을 지원하나요? (신용카드, 가상계좌, 간편결제 등)"),
-        ("scale", "예상되는 일일 주문 건수와 동시 접속자 수는 얼마나 되나요?"),
-        ("authentication", "사용자 인증 방식은 어떻게 할 예정인가요? (자체 회원가입, 소셜 로그인 등)"),
-        ("deployment", "배포 환경은 어디인가요? (AWS, GCP, Azure, 온프레미스 등)")
-    ]
+    # LLM 클라이언트 가져오기
+    llm_client = get_gemini_client()
 
-    # 현재까지 답변받은 질문 개수 확인
-    answered_count = len(state.collected_info)
+    # 프롬프트 생성
+    user_prompt = get_consultant_prompt(
+        collected_info=state.collected_info,
+        user_input=state.user_input
+    )
 
-    # 아직 답변받지 않은 다음 질문 찾기
-    if answered_count < len(question_sequence):
-        # 다음 질문 하나만 선택
-        next_category, next_question = question_sequence[answered_count]
+    try:
+        # LLM 호출하여 질문 생성
+        response = llm_client.generate_with_context(
+            system_prompt=CONSULTANT_SYSTEM_PROMPT,
+            user_message=user_prompt
+        )
 
-        # State 업데이트 (한 개의 질문만)
-        state.questions = [next_question]
+        # 응답을 줄 단위로 나누고 질문만 추출
+        questions = []
+        for line in response.split('\n'):
+            line = line.strip()
+            # 번호가 있는 질문만 추출 (예: "1. 질문내용", "- 질문내용")
+            if line and (
+                line[0].isdigit() or
+                line.startswith('-') or
+                line.startswith('*') or
+                line.startswith('•')
+            ):
+                # 번호 및 마크다운 기호 제거
+                cleaned = line.lstrip('0123456789.-*• ').strip()
+                if cleaned:
+                    questions.append(cleaned)
 
-        # 메시지 추가
+        # 질문이 없으면 기본 질문 사용
+        if not questions:
+            questions = ["프로젝트에 대해 더 자세히 설명해주실 수 있나요?"]
+
+        # 최대 5개 질문으로 제한
+        questions = questions[:5]
+
+        # State 업데이트
+        state.questions = questions
+
+        # 메시지 추가 (질문을 보기 좋게 포맷팅)
+        formatted_questions = "\n".join([f"{i+1}. {q}" for i, q in enumerate(questions)])
         state.messages.append(
             Message(
                 role="assistant",
-                content=f"추가 정보가 필요합니다:\n\n{next_question}"
+                content=f"추가 정보가 필요합니다:\n\n{formatted_questions}"
             )
         )
-    else:
-        # 모든 정보가 수집되었으면 빈 질문 리스트
-        state.questions = []
+
+    except Exception as e:
+        print(f"⚠️ Consultant Agent LLM error: {e}")
+        print("⚠️ Falling back to default questions")
+
+        # Fallback: 기본 질문 사용
+        default_questions = [
+            "프로젝트의 주요 기능은 무엇인가요?",
+            "예상 사용자 수는 얼마나 되나요?",
+            "어떤 플랫폼을 지원할 예정인가요? (웹, 모바일, 데스크톱)",
+            "배포 환경은 어디인가요? (클라우드, 온프레미스 등)",
+            "특별히 고려해야 할 보안 요구사항이 있나요?"
+        ]
+
+        state.questions = default_questions
+        formatted_questions = "\n".join([f"{i+1}. {q}" for i, q in enumerate(default_questions)])
+        state.messages.append(
+            Message(
+                role="assistant",
+                content=f"추가 정보가 필요합니다:\n\n{formatted_questions}"
+            )
+        )
 
     return state
