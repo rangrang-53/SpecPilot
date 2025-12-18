@@ -286,7 +286,9 @@ def render_sidebar():
 
 def show_initial_screen():
     """초기 화면 (Wireframe 1)"""
-    st.session_state.current_stage = "initial"
+    # current_stage는 세션이 없을 때만 설정
+    if not st.session_state.session_id:
+        st.session_state.current_stage = "initial"
 
     # 헤더 - SpecPilot 로고 및 타이틀
     st.title("✈️ SpecPilot")
@@ -367,7 +369,9 @@ def show_initial_screen():
 
 def show_qa_screen():
     """질문-응답 화면 (Wireframe 2) - 02-qa-screen.svg 기반"""
-    st.session_state.current_stage = "interview"
+    # current_stage는 is_complete가 아닐 때만 interview로 설정
+    if not st.session_state.is_complete:
+        st.session_state.current_stage = "interview"
 
     # 헤더
     st.title("✈️ SpecPilot")
@@ -443,6 +447,8 @@ def show_qa_screen():
                 st.session_state.is_complete = result.get("is_complete", False)
 
                 if st.session_state.is_complete:
+                    # 완료 상태로 전환
+                    st.session_state.current_stage = "complete"
                     # 완료 메시지
                     st.session_state.messages.append({
                         "role": "assistant",
