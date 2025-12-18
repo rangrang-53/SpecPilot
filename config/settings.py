@@ -2,6 +2,14 @@
 from pydantic_settings import BaseSettings
 from pydantic import ConfigDict
 from typing import Optional
+import os
+
+# Streamlit Secrets 지원
+try:
+    import streamlit as st
+    HAS_STREAMLIT = True
+except ImportError:
+    HAS_STREAMLIT = False
 
 
 class Settings(BaseSettings):
@@ -9,7 +17,7 @@ class Settings(BaseSettings):
 
     # Google Gemini 설정
     google_api_key: str = "dummy-api-key"
-    model_name: str = "gemini-1.5-pro"
+    model_name: str = "gemini-2.0-flash-exp"
     temperature: float = 0.7
 
     # 워크플로우 설정
@@ -41,4 +49,22 @@ class Settings(BaseSettings):
 
 
 # 전역 설정 인스턴스
-settings = Settings()
+def get_settings() -> Settings:
+    """설정 인스턴스 가져오기 (Streamlit Secrets 우선)"""
+    # Streamlit Cloud 환경이면 Secrets 사용
+    if HAS_STREAMLIT and hasattr(st, 'secrets'):
+        try:
+            return Settings(
+                google_api_key=st.secrets.get("GOOGLE_API_KEY", "dummy-api-key"),
+                model_name=st.secrets.get("MODEL_NAME", "gemini-2.0-flash-exp"),
+                temperature=float(st.secrets.get("TEMPERATURE", 0.7)),
+                max_iterations=int(st.secrets.get("MAX_ITERATIONS", 5)),
+            )
+        except Exception:
+            pass
+
+    # 로컬 환경이면 .env 사용
+    return Settings()
+
+
+settings = get_settings()
