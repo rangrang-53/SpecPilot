@@ -602,6 +602,84 @@ def _generate_functional_requirements(
     return requirements
 
 
+def _extract_info_smart(collected_info: dict, category: str, default: str = "지정되지 않음") -> str:
+    """
+    collected_info에서 특정 카테고리 정보를 스마트하게 추출
+
+    Args:
+        collected_info: 수집된 정보 딕셔너리
+        category: 추출할 카테고리 (payment, authentication, scale, deployment, project_type)
+        default: 기본값
+
+    Returns:
+        추출된 정보 문자열
+    """
+    # 1. 먼저 카테고리 키로 직접 조회
+    if category in collected_info and collected_info[category]:
+        return collected_info[category]
+
+    # 2. initial_request와 response_X에서 키워드 검색
+    all_text = ""
+    for key, value in collected_info.items():
+        if key.startswith("initial_request") or key.startswith("response_"):
+            all_text += f" {value}"
+
+    all_text_lower = all_text.lower()
+
+    # 3. 카테고리별 키워드 기반 추출
+    if category == "payment":
+        pg_keywords = ["kg", "이니시스", "토스", "나이스", "페이팔", "페이코", "카카오페이", "네이버페이"]
+        for keyword in pg_keywords:
+            if keyword in all_text_lower:
+                # 원본 텍스트에서 해당 부분 추출 (대소문자 유지)
+                for word in all_text.split():
+                    if keyword in word.lower():
+                        return f"{word} PG"
+        if "결제" in all_text_lower or "pg" in all_text_lower:
+            return "결제 시스템 필요"
+
+    elif category == "authentication":
+        auth_keywords = ["oauth", "jwt", "소셜로그인", "카카오", "네이버", "구글", "인증"]
+        for keyword in auth_keywords:
+            if keyword in all_text_lower:
+                return f"{keyword} 기반 인증"
+
+    elif category == "scale":
+        # 숫자 패턴 찾기
+        import re
+        numbers = re.findall(r'(\d+)(?:명|만|천)', all_text)
+        if numbers:
+            return f"{numbers[0]}명 규모"
+        if "대규모" in all_text_lower:
+            return "대규모 프로젝트"
+        if "소규모" in all_text_lower:
+            return "소규모 프로젝트"
+
+    elif category == "deployment":
+        deploy_keywords = ["aws", "gcp", "azure", "클라우드", "온프레미스", "도커", "쿠버네티스"]
+        for keyword in deploy_keywords:
+            if keyword in all_text_lower:
+                return f"{keyword.upper()} 환경"
+
+    elif category == "project_type":
+        type_keywords = {
+            "쇼핑몰": "이커머스",
+            "이커머스": "이커머스",
+            "인트라넷": "인트라넷",
+            "사내": "인트라넷",
+            "그룹웨어": "인트라넷",
+            "sns": "소셜",
+            "커뮤니티": "소셜",
+            "배달": "배달 서비스",
+            "예약": "예약 시스템"
+        }
+        for keyword, ptype in type_keywords.items():
+            if keyword in all_text_lower:
+                return ptype
+
+    return default
+
+
 def writer_agent(state: RequirementState) -> RequirementState:
     """
     최종 SRS 문서를 생성하는 에이전트 (더미)
@@ -612,12 +690,12 @@ def writer_agent(state: RequirementState) -> RequirementState:
     Returns:
         업데이트된 요구사항 상태
     """
-    # collected_info에서 사용자 답변 추출
-    project_name = state.collected_info.get("project_name", "프로젝트")
-    payment_info = state.collected_info.get("payment", "지정되지 않음")
-    scale_info = state.collected_info.get("scale", "지정되지 않음")
-    auth_info = state.collected_info.get("authentication", "지정되지 않음")
-    deployment_info = state.collected_info.get("deployment", "지정되지 않음")
+    # collected_info에서 사용자 답변 추출 (스마트 추출 함수 사용)
+    project_name = _extract_info_smart(state.collected_info, "project_type", "프로젝트")
+    payment_info = _extract_info_smart(state.collected_info, "payment", "지정되지 않음")
+    scale_info = _extract_info_smart(state.collected_info, "scale", "지정되지 않음")
+    auth_info = _extract_info_smart(state.collected_info, "authentication", "지정되지 않음")
+    deployment_info = _extract_info_smart(state.collected_info, "deployment", "지정되지 않음")
 
     # 사용자 입력을 반영한 개요 생성
     overview = f"""

@@ -51,11 +51,19 @@ class DummyExecutor:
             state = RequirementState(user_input=user_input)
             # 첫 번째 입력은 "initial_request"로 저장
             state.collected_info["initial_request"] = user_input
+
+            # InfoExtractor로 초기 입력에서 정보 추출
+            extracted_info = self.info_extractor.extract(user_input, state.collected_info)
+            state.collected_info.update(extracted_info)
         else:
             # 기존 세션이면 user_input 업데이트
             state.user_input = user_input
 
-            # 2. 모든 사용자 응답을 collected_info에 저장 (카테고리 자동 생성)
+            # 2. InfoExtractor로 정보 추출 후 저장
+            extracted_info = self.info_extractor.extract(user_input, state.collected_info)
+            state.collected_info.update(extracted_info)
+
+            # 3. 추가로 모든 사용자 응답을 collected_info에 저장 (백업용)
             # iteration 횟수를 기반으로 키 생성
             response_key = f"response_{state.iteration_count}"
             state.collected_info[response_key] = user_input

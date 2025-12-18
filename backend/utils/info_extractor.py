@@ -13,11 +13,12 @@ class InfoExtractor:
     def __init__(self):
         """InfoExtractor 초기화"""
         self.keywords = {
-            "payment": ["결제", "카드", "가상계좌", "간편결제", "페이"],
-            "authentication": ["인증", "로그인", "회원가입", "OAuth", "JWT"],
-            "deployment": ["배포", "AWS", "GCP", "Azure", "클라우드", "온프레미스"],
-            "scale": ["동시접속", "사용자", "트래픽", "주문", "건수"],
-            "features": ["기능", "쇼핑몰", "커머스", "장바구니", "상품"],
+            "payment": ["결제", "카드", "가상계좌", "간편결제", "페이", "KG", "이니시스", "토스", "나이스", "PG"],
+            "authentication": ["인증", "로그인", "회원가입", "OAuth", "JWT", "소셜로그인", "카카오", "네이버"],
+            "deployment": ["배포", "AWS", "GCP", "Azure", "클라우드", "온프레미스", "도커", "쿠버네티스"],
+            "scale": ["동시접속", "사용자", "트래픽", "주문", "건수", "명", "만"],
+            "features": ["기능", "쇼핑몰", "커머스", "장바구니", "상품", "예약", "결재", "게시판"],
+            "project_type": ["쇼핑몰", "이커머스", "인트라넷", "사내", "그룹웨어", "SNS", "커뮤니티", "배달", "예약"],
         }
 
     def extract(self, text: str, existing_info: Dict[str, Any] = None) -> Dict[str, Any]:
