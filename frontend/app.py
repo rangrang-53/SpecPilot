@@ -247,14 +247,14 @@ def render_sidebar():
 
         # Iteration 카운터 (Yellow box with progress bar)
         st.subheader("🔄 Iteration Counter")
-        iteration_pct = min((st.session_state.iteration_count / 5) * 100, 100)
+        iteration_pct = min((st.session_state.iteration_count / 10) * 100, 100)
 
         st.markdown(f"""
         <div class='iteration-counter'>
             <p style='font-size: 14px; color: #78350f; margin: 0; font-weight: bold;'>현재 반복:</p>
             <p style='font-size: 32px; color: #b45309; margin: 5px 0; font-weight: bold;'>
                 {st.session_state.iteration_count}
-                <span style='font-size: 18px; color: #92400e;'>/ 5</span>
+                <span style='font-size: 18px; color: #92400e;'>/ 10</span>
             </p>
             <div style='background-color: #fde68a; height: 24px; border-radius: 4px; border: 1px solid #f59e0b; margin-top: 10px; position: relative;'>
                 <div style='background-color: #f59e0b; height: 100%; width: {iteration_pct}%; border-radius: 4px;'></div>
@@ -306,13 +306,20 @@ def show_initial_screen():
     </div>
     """, unsafe_allow_html=True)
 
-    # 예시 박스 (Gray Box)
+    # 입력 가이드라인 (Gray Box)
     st.markdown("""
     <div class='example-box'>
-        <p style='color: #6b7280; font-weight: bold; font-size: 14px; margin-top: 0;'>예시:</p>
-        <p style='color: #374151; font-size: 14px; margin: 5px 0;'>"온라인 쇼핑몰을 만들고 싶습니다"</p>
-        <p style='color: #374151; font-size: 14px; margin: 5px 0;'>"음식 배달 서비스 앱을 개발하려고 합니다"</p>
-        <p style='color: #374151; font-size: 14px; margin: 5px 0;'>"사내 재고 관리 시스템이 필요합니다"</p>
+        <p style='color: #1f2937; font-weight: bold; font-size: 15px; margin-top: 0;'>💡 입력 가이드라인</p>
+        <p style='color: #6b7280; font-size: 13px; margin: 10px 0 5px 0;'>다음 정보를 포함하면 더 정확한 SRS를 생성할 수 있습니다:</p>
+        <ul style='color: #374151; font-size: 13px; margin: 5px 0; padding-left: 20px;'>
+            <li style='margin: 5px 0;'><strong>프로젝트 목적</strong>: 어떤 문제를 해결하려고 하나요?</li>
+            <li style='margin: 5px 0;'><strong>주요 기능</strong>: 핵심 기능이나 특징은 무엇인가요?</li>
+            <li style='margin: 5px 0;'><strong>사용자</strong>: 누가 이 시스템을 사용하나요?</li>
+            <li style='margin: 5px 0;'><strong>규모</strong>: 예상 사용자 수나 트래픽은 어느 정도인가요?</li>
+        </ul>
+        <p style='color: #6b7280; font-weight: bold; font-size: 13px; margin-top: 15px; margin-bottom: 5px;'>입력 예시:</p>
+        <p style='color: #374151; font-size: 13px; margin: 5px 0; padding: 8px; background-color: #f9fafb; border-left: 3px solid #3b82f6; border-radius: 4px;'>"온라인 쇼핑몰을 만들고 싶습니다. 의류와 액세서리를 판매하며, 월 1만 명 정도의 방문자를 예상합니다. 상품 검색, 장바구니, 결제 기능이 필요합니다."</p>
+        <p style='color: #374151; font-size: 13px; margin: 5px 0; padding: 8px; background-color: #f9fafb; border-left: 3px solid #10b981; border-radius: 4px;'>"사내 인트라넷 시스템이 필요합니다. 직원 200명이 사용하며, 전자결재, 조직도, 공지사항, 회의실 예약 기능이 있어야 합니다."</p>
     </div>
     """, unsafe_allow_html=True)
 

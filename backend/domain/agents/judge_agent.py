@@ -19,7 +19,7 @@ def judge_agent(state: RequirementState) -> RequirementState:
         업데이트된 요구사항 상태
     """
     # iteration 제한 체크
-    if state.iteration_count >= 5:
+    if state.iteration_count >= 10:
         state.is_complete = True
         state.judge_feedback = "최대 반복 횟수에 도달했습니다. 현재 수집된 정보로 SRS를 생성합니다."
         return state
