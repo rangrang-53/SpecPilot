@@ -320,6 +320,13 @@ def show_initial_screen():
     # 입력창 - 초기 요구사항 입력
     st.subheader("📝 프로젝트 아이디어 입력")
 
+    # Ctrl+Enter 안내 메시지
+    st.markdown("""
+    <p style='color: #6b7280; font-size: 13px; margin-bottom: 10px;'>
+        💡 <strong>Ctrl + Enter</strong>를 눌러 빠르게 시작하세요!
+    </p>
+    """, unsafe_allow_html=True)
+
     # Form을 사용하여 엔터키로 전송 가능하게 함
     with st.form(key="initial_input_form", clear_on_submit=True):
         user_input = st.text_area(
