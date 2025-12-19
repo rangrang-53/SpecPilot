@@ -103,7 +103,9 @@ def judge_agent(state: RequirementState) -> RequirementState:
         extracted_categories = [k for k in state.collected_info.keys()
                                if not k.startswith("response_") and k != "initial_request"]
         info_count = len(extracted_categories)
-        required_count = 4  # 최소 4개 카테고리 필요 (project_type, scale, auth, deployment)
+
+        # 필수 카테고리 개수를 동적으로 계산
+        required_count = 4  # 기본: project_type, scale, auth, deployment
 
         # 필수 카테고리 확인
         has_project_type = "project_type" in state.collected_info
@@ -117,6 +119,7 @@ def judge_agent(state: RequirementState) -> RequirementState:
                            for keyword in ["이커머스", "쇼핑", "예약", "결제"])
         has_payment = "payment" in state.collected_info
 
+        # 필수 항목 체크
         missing_items = []
         if not has_auth:
             missing_items.append("인증 방식")
@@ -126,8 +129,10 @@ def judge_agent(state: RequirementState) -> RequirementState:
             missing_items.append("예상 규모")
         if needs_payment and not has_payment:
             missing_items.append("결제 수단")
+            required_count = 5  # 이커머스는 5개 필수
 
         # 정보 개수와 필수 항목 모두 충족해야 approve
+        # CRITICAL: 모든 필수 항목이 있어야만 approve (missing_items가 비어있어야 함)
         if info_count >= required_count and not missing_items:
             state.is_complete = True
             state.judge_feedback = "충분한 정보가 수집되었습니다. SRS 문서를 생성할 수 있습니다."
