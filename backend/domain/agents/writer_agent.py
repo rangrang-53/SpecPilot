@@ -205,7 +205,43 @@ def _generate_test_scenarios(
             then="세션이 종료되고 로그인 페이지로 이동한다"
         ))
 
-    # 2. 이커머스 시나리오
+    # 2. 결제 시나리오 (결제 정보가 있는 모든 프로젝트)
+    if payment_info and payment_info != "지정되지 않음":
+        if is_ecommerce:
+            scenarios.append(GherkinScenario(
+                feature="결제 처리",
+                scenario="상품 결제",
+                given="사용자가 장바구니에 상품을 담고 결제 페이지에 있다",
+                when=f"{payment_info} 결제 정보를 입력하고 결제 버튼을 클릭한다",
+                then="결제가 승인되고 주문 확인 페이지로 이동한다"
+            ))
+        elif is_booking:
+            scenarios.append(GherkinScenario(
+                feature="결제 처리",
+                scenario="예약 결제",
+                given="사용자가 예약 정보를 입력하고 결제 페이지에 있다",
+                when=f"{payment_info} 결제 정보를 입력하고 결제 버튼을 클릭한다",
+                then="결제가 승인되고 예약이 확정된다"
+            ))
+        else:
+            scenarios.append(GherkinScenario(
+                feature="결제 처리",
+                scenario="일반 결제",
+                given="사용자가 결제 페이지에 있다",
+                when=f"{payment_info} 결제 정보를 입력하고 결제 버튼을 클릭한다",
+                then="결제가 승인되고 결제 완료 페이지로 이동한다"
+            ))
+
+        # 결제 실패 시나리오도 추가
+        scenarios.append(GherkinScenario(
+            feature="결제 처리",
+            scenario="결제 실패 처리",
+            given="사용자가 결제 페이지에 있다",
+            when="잔액이 부족한 카드로 결제를 시도한다",
+            then="결제 실패 메시지가 표시되고 다시 시도할 수 있다"
+        ))
+
+    # 3. 이커머스 시나리오
     if is_ecommerce:
         scenarios.extend([
             GherkinScenario(
@@ -224,16 +260,7 @@ def _generate_test_scenarios(
             ),
         ])
 
-        if payment_info and payment_info != "지정되지 않음":
-            scenarios.append(GherkinScenario(
-                feature="결제 처리",
-                scenario="상품 결제",
-                given="사용자가 장바구니에 상품을 담고 결제 페이지에 있다",
-                when=f"{payment_info} 결제 정보를 입력하고 결제 버튼을 클릭한다",
-                then="결제가 승인되고 주문 확인 페이지로 이동한다"
-            ))
-
-    # 3. 소셜/커뮤니티 시나리오
+    # 4. 소셜/커뮤니티 시나리오
     if is_social:
         scenarios.extend([
             GherkinScenario(
@@ -259,7 +286,7 @@ def _generate_test_scenarios(
             ),
         ])
 
-    # 4. 예약 시스템 시나리오
+    # 5. 예약 시스템 시나리오
     if is_booking:
         scenarios.extend([
             GherkinScenario(
@@ -285,7 +312,7 @@ def _generate_test_scenarios(
             ),
         ])
 
-    # 5. 실시간 채팅/메시징 시나리오
+    # 6. 실시간 채팅/메시징 시나리오
     if is_realtime:
         scenarios.extend([
             GherkinScenario(
@@ -304,7 +331,7 @@ def _generate_test_scenarios(
             ),
         ])
 
-    # 6. 배달 서비스 시나리오
+    # 7. 배달 서비스 시나리오
     if is_delivery:
         scenarios.extend([
             GherkinScenario(
@@ -323,7 +350,7 @@ def _generate_test_scenarios(
             ),
         ])
 
-    # 7. 관리자 기능 시나리오
+    # 8. 관리자 기능 시나리오
     if is_admin:
         scenarios.extend([
             GherkinScenario(
@@ -342,7 +369,7 @@ def _generate_test_scenarios(
             ),
         ])
 
-    # 8. 콘텐츠 관리 시나리오
+    # 9. 콘텐츠 관리 시나리오
     if is_content:
         scenarios.extend([
             GherkinScenario(
