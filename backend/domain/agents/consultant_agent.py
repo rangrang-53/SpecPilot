@@ -19,9 +19,18 @@ def consultant_agent(state: RequirementState) -> RequirementState:
     """
     # CRITICAL: 사용자가 예시를 요청하는 경우 감지
     user_input_lower = state.user_input.lower() if state.user_input else ""
-    is_asking_example = any(keyword in user_input_lower for keyword in [
+    example_keywords = [
         "예시", "예를들면", "예를 들면", "예를들어", "예를 들어", "예는", "예제", "구체적으로", "어떤 걸", "어떤거"
-    ])
+    ]
+    is_asking_example = any(keyword in user_input_lower for keyword in example_keywords)
+
+    # 디버그 로그
+    print(f"🔍 [DEBUG] User input: '{state.user_input}'")
+    print(f"🔍 [DEBUG] User input lowercase: '{user_input_lower}'")
+    print(f"🔍 [DEBUG] Is asking example: {is_asking_example}")
+    if is_asking_example:
+        matched = [k for k in example_keywords if k in user_input_lower]
+        print(f"🔍 [DEBUG] Matched keywords: {matched}")
 
     # 예시 요청인 경우, 마지막 질문 확인
     if is_asking_example and len(state.messages) >= 2:
