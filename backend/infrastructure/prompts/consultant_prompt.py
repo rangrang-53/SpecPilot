@@ -26,8 +26,13 @@ CONSULTANT_USER_PROMPT = """
 Already collected information:
 {collected_info}
 
+Conversation history (questions already asked):
+{conversation_history}
+
 Latest user response:
 {user_input}
+
+**CRITICAL: NEVER repeat questions that appear in conversation history!**
 
 **PRIORITY RULES - Ask in this order:**
 1. If project is 이커머스/쇼핑/예약 and NO payment info → Ask about payment method (PG사)
@@ -37,7 +42,7 @@ Latest user response:
 5. Otherwise → Ask about other technical details
 
 Generate ONE short question (max 15 words) about the HIGHEST PRIORITY missing information.
-Do NOT ask about anything already in collected_info.
+Do NOT ask about anything already in collected_info OR conversation_history.
 Output ONLY the question itself, nothing else.
 
 Examples based on priority:
@@ -47,13 +52,14 @@ Examples based on priority:
 """
 
 
-def get_consultant_prompt(collected_info: dict, user_input: str) -> str:
+def get_consultant_prompt(collected_info: dict, user_input: str, conversation_history: str = "") -> str:
     """
     Consultant 프롬프트 생성
 
     Args:
         collected_info: 수집된 정보
         user_input: 사용자 입력
+        conversation_history: 대화 히스토리
 
     Returns:
         완성된 프롬프트
@@ -63,8 +69,11 @@ def get_consultant_prompt(collected_info: dict, user_input: str) -> str:
         user_input = ""
     if collected_info is None:
         collected_info = {}
+    if conversation_history is None:
+        conversation_history = ""
 
     return CONSULTANT_USER_PROMPT.format(
         collected_info=collected_info,
+        conversation_history=conversation_history,
         user_input=user_input
     )

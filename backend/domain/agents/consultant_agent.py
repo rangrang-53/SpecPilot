@@ -20,10 +20,17 @@ def consultant_agent(state: RequirementState) -> RequirementState:
     # LLM 클라이언트 가져오기
     llm_client = get_gemini_client()
 
+    # 대화 히스토리 생성 (assistant 메시지만 추출 - 이미 물어본 질문들)
+    conversation_history = "\n".join([
+        f"Already asked: {msg.content}" for msg in state.messages
+        if msg.role == "assistant"
+    ])
+
     # 프롬프트 생성
     user_prompt = get_consultant_prompt(
         collected_info=state.collected_info,
-        user_input=state.user_input
+        user_input=state.user_input,
+        conversation_history=conversation_history
     )
 
     try:
