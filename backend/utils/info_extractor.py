@@ -1,7 +1,7 @@
 """Info Extractor - 사용자 입력에서 정보 추출"""
 from typing import Dict, Any
 import re
-from backend.utils.string_utils import safe_lower
+from backend.utils.string_utils import safe_lower, safe_upper
 
 
 class InfoExtractor:
@@ -77,20 +77,21 @@ class InfoExtractor:
 
     def _extract_deployment(self, text: str) -> str:
         """배포 환경 추출"""
-        text_upper = text.upper()
+        text_upper = safe_upper(text)
+        text_safe = text if text else ""
         if "AWS" in text_upper:
             return "AWS"
         if "GCP" in text_upper:
             return "GCP"
         if "AZURE" in text_upper:
             return "Azure"
-        if "클라우드" in text:
+        if "클라우드" in text_safe:
             return "클라우드"
-        if "온프레미스" in text:
+        if "온프레미스" in text_safe:
             return "온프레미스"
-        if "도커" in text or "DOCKER" in text_upper:
+        if "도커" in text_safe or "DOCKER" in text_upper:
             return "Docker"
-        if "쿠버네티스" in text or "KUBERNETES" in text_upper or "K8S" in text_upper:
+        if "쿠버네티스" in text_safe or "KUBERNETES" in text_upper or "K8S" in text_upper:
             return "Kubernetes"
         return None
 

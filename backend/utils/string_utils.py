@@ -60,3 +60,24 @@ def safe_str(text) -> str:
     except Exception as e:
         print(f"⚠️ Warning: safe_str failed on {type(text)}: {e}")
         return ""
+
+
+def safe_upper(text) -> str:
+    """
+    Safely convert text to uppercase, handling None and non-string types
+
+    Args:
+        text: Any type of input
+
+    Returns:
+        Uppercase string, or empty string if input is None/invalid
+    """
+    try:
+        if text is None:
+            return ""
+        if not isinstance(text, str):
+            text = str(text)
+        return text.upper()
+    except Exception as e:
+        print(f"⚠️ Warning: safe_upper failed on {type(text)}: {e}")
+        return ""
