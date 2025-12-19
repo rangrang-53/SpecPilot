@@ -33,8 +33,10 @@ def _generate_tech_stack(
     """
     tech_stack = []
 
-    # 입력 텍스트 분석 (소문자 변환)
-    input_lower = safe_lower(user_input)
+    # CRITICAL: 초기 요청(initial_request)도 함께 분석
+    initial_request = collected_info.get("initial_request", "")
+    combined_input = f"{user_input} {initial_request}"
+    input_lower = safe_lower(combined_input)
     scale_lower = safe_lower(scale)
 
     # 1. Backend 기술 스택 결정
@@ -176,7 +178,11 @@ def _generate_test_scenarios(
         Gherkin 테스트 시나리오 리스트
     """
     scenarios = []
-    input_lower = safe_lower(user_input)
+
+    # CRITICAL: 초기 요청(initial_request)도 함께 분석
+    initial_request = collected_info.get("initial_request", "")
+    combined_input = f"{user_input} {initial_request}"
+    input_lower = safe_lower(combined_input)
 
     # 프로젝트 유형 분석
     is_ecommerce = any(keyword in input_lower for keyword in ["쇼핑", "이커머스", "커머스", "주문", "장바구니"])
@@ -436,7 +442,11 @@ def _generate_functional_requirements(
         기능 요구사항 리스트
     """
     requirements = []
-    input_lower = safe_lower(user_input)
+
+    # CRITICAL: 초기 요청(initial_request)도 함께 분석
+    initial_request = collected_info.get("initial_request", "")
+    combined_input = f"{user_input} {initial_request}"
+    input_lower = safe_lower(combined_input)
     fr_id = 1
 
     # 프로젝트 유형 분석
