@@ -99,14 +99,23 @@ def judge_agent(state: RequirementState) -> RequirementState:
         print("⚠️ Falling back to strict evaluation")
 
         # Fallback: 엄격한 평가 로직
-        info_count = len(state.collected_info)
-        required_count = 5  # 최소 5개 정보 필요
+        # response_X 같은 백업 데이터는 제외하고 실제 추출된 정보만 카운트
+        extracted_categories = [k for k in state.collected_info.keys()
+                               if not k.startswith("response_") and k != "initial_request"]
+        info_count = len(extracted_categories)
+        required_count = 4  # 최소 4개 카테고리 필요 (project_type, scale, auth, deployment)
 
         # 필수 카테고리 확인
         has_project_type = "project_type" in state.collected_info
         has_scale = "scale" in state.collected_info
         has_auth = "authentication" in state.collected_info
         has_deployment = "deployment" in state.collected_info
+
+        # 이커머스/예약 프로젝트는 payment도 필수
+        project_type = state.collected_info.get("project_type", "")
+        needs_payment = any(keyword in str(project_type).lower()
+                           for keyword in ["이커머스", "쇼핑", "예약", "결제"])
+        has_payment = "payment" in state.collected_info
 
         missing_items = []
         if not has_auth:
@@ -115,6 +124,8 @@ def judge_agent(state: RequirementState) -> RequirementState:
             missing_items.append("배포 환경")
         if not has_scale:
             missing_items.append("예상 규모")
+        if needs_payment and not has_payment:
+            missing_items.append("결제 수단")
 
         # 정보 개수와 필수 항목 모두 충족해야 approve
         if info_count >= required_count and not missing_items:
