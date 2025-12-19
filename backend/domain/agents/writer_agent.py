@@ -191,7 +191,8 @@ def _generate_test_scenarios(
     is_content = any(keyword in input_lower for keyword in ["블로그", "콘텐츠", "게시판", "포스팅"])
     is_realtime = any(keyword in input_lower for keyword in ["실시간", "채팅", "알림", "메시지"])
     is_admin = any(keyword in input_lower for keyword in ["관리자", "어드민", "대시보드", "통계"])
-    is_delivery = any(keyword in input_lower for keyword in ["배달", "배송", "딜리버리", "음식"])
+    # CRITICAL: "배달" 키워드만 사용 (쇼핑몰의 "배송"과 구분하기 위해)
+    is_delivery = any(keyword in input_lower for keyword in ["배달", "딜리버리", "음식점", "음식 배달", "배달앱"])
 
     # 1. 사용자 인증 시나리오 (거의 모든 프로젝트)
     if auth_info and auth_info != "지정되지 않음":
@@ -554,7 +555,8 @@ def _generate_functional_requirements(
     is_intranet = any(keyword in input_lower for keyword in ["인트라넷", "사내", "그룹웨어", "전자결재"])
     is_content = any(keyword in input_lower for keyword in ["블로그", "콘텐츠", "게시판"])
     is_realtime = any(keyword in input_lower for keyword in ["실시간", "채팅", "알림"])
-    is_delivery = any(keyword in input_lower for keyword in ["배달", "배송", "음식"])
+    # CRITICAL: "배달" 키워드만 사용 (쇼핑몰의 "배송"과 구분하기 위해)
+    is_delivery = any(keyword in input_lower for keyword in ["배달", "음식점", "음식 배달", "배달앱"])
 
     # 1. 인증은 거의 모든 프로젝트에 필요
     if auth_info and auth_info != "지정되지 않음":
