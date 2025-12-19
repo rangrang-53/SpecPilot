@@ -50,6 +50,10 @@ def judge_agent(state: RequirementState) -> RequirementState:
         completeness_score = 0.0
         feedback = ""
 
+        # response가 None이면 기본값 사용
+        if not response:
+            response = "정보 부족"
+
         # 간단한 파싱: "approve" 또는 "reject" 키워드 찾기
         response_lower = response.lower()
 
@@ -75,7 +79,8 @@ def judge_agent(state: RequirementState) -> RequirementState:
             line = line.strip()
             if line and not line.startswith('-') and not line.startswith('*'):
                 # JSON 키가 아닌 일반 텍스트만 피드백으로 사용
-                if not any(key in line.lower() for key in ['decision', 'completeness', 'missing']):
+                line_lower = line.lower() if line else ""
+                if not any(key in line_lower for key in ['decision', 'completeness', 'missing']):
                     feedback_lines.append(line)
 
         feedback = " ".join(feedback_lines[:3])  # 최대 3줄
