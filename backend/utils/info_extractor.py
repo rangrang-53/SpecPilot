@@ -1,6 +1,7 @@
 """Info Extractor - 사용자 입력에서 정보 추출"""
 from typing import Dict, Any
 import re
+from backend.utils.string_utils import safe_lower
 
 
 class InfoExtractor:
@@ -38,7 +39,7 @@ class InfoExtractor:
 
     def _extract_payment(self, text: str) -> str:
         """결제 수단 추출"""
-        text_lower = text.lower()
+        text_lower = safe_lower(text)
         pg_map = {
             "kg": "KG 이니시스",
             "이니시스": "KG 이니시스",
@@ -56,7 +57,7 @@ class InfoExtractor:
 
     def _extract_authentication(self, text: str) -> str:
         """인증 방식 추출"""
-        text_lower = text.lower()
+        text_lower = safe_lower(text)
         if "oauth" in text_lower:
             return "OAuth 2.0"
         if "jwt" in text_lower:
@@ -126,7 +127,7 @@ class InfoExtractor:
 
     def _extract_project_type(self, text: str) -> str:
         """프로젝트 타입 추출"""
-        text_lower = text.lower()
+        text_lower = safe_lower(text)
         type_map = {
             "쇼핑몰": "이커머스",
             "이커머스": "이커머스",
@@ -173,8 +174,8 @@ class InfoExtractor:
 
             # 키워드가 포함되어 있는지 확인
             keywords = config["keywords"]
-            text_lower = text.lower()
-            has_keyword = any(keyword.lower() in text_lower for keyword in keywords)
+            text_lower = safe_lower(text)
+            has_keyword = any(safe_lower(keyword) in text_lower for keyword in keywords)
 
             if has_keyword:
                 # 카테고리별 추출 함수 실행

@@ -6,6 +6,7 @@ from backend.infrastructure.prompts.judge_prompt import (
     JUDGE_SYSTEM_PROMPT,
     get_judge_prompt
 )
+from backend.utils.string_utils import safe_lower
 
 
 def judge_agent(state: RequirementState) -> RequirementState:
@@ -55,7 +56,7 @@ def judge_agent(state: RequirementState) -> RequirementState:
             response = "정보 부족"
 
         # 간단한 파싱: "approve" 또는 "reject" 키워드 찾기
-        response_lower = response.lower()
+        response_lower = safe_lower(response)
 
         if "approve" in response_lower or "충분" in response or "완료" in response:
             decision = "approve"
@@ -79,7 +80,7 @@ def judge_agent(state: RequirementState) -> RequirementState:
             line = line.strip()
             if line and not line.startswith('-') and not line.startswith('*'):
                 # JSON 키가 아닌 일반 텍스트만 피드백으로 사용
-                line_lower = line.lower() if line else ""
+                line_lower = safe_lower(line)
                 if not any(key in line_lower for key in ['decision', 'completeness', 'missing']):
                     feedback_lines.append(line)
 
