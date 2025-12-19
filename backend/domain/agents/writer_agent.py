@@ -258,11 +258,109 @@ def _generate_test_scenarios(
                 then="검색 결과 페이지에 관련 상품 목록이 표시된다"
             ),
             GherkinScenario(
+                feature="상품 필터링",
+                scenario="가격대별 상품 필터링",
+                given="사용자가 상품 목록 페이지에 있다",
+                when="가격 범위를 설정하고 필터 적용 버튼을 클릭한다",
+                then="선택한 가격대의 상품만 필터링되어 표시된다"
+            ),
+            GherkinScenario(
+                feature="상품 상세 조회",
+                scenario="상품 상세 정보 확인",
+                given="사용자가 상품 목록에서 상품을 선택했다",
+                when="상품 이미지를 클릭한다",
+                then="상품 상세 페이지로 이동하고 가격, 설명, 리뷰가 표시된다"
+            ),
+            GherkinScenario(
                 feature="장바구니 관리",
                 scenario="장바구니에 상품 추가",
                 given="사용자가 상품 상세 페이지에 있다",
                 when="'장바구니 담기' 버튼을 클릭한다",
                 then="상품이 장바구니에 추가되고 확인 메시지가 표시된다"
+            ),
+            GherkinScenario(
+                feature="장바구니 관리",
+                scenario="장바구니 수량 변경",
+                given="사용자가 장바구니에 상품이 담겨 있다",
+                when="상품 수량을 변경하고 업데이트 버튼을 클릭한다",
+                then="변경된 수량이 반영되고 총 금액이 업데이트된다"
+            ),
+            GherkinScenario(
+                feature="장바구니 관리",
+                scenario="장바구니 상품 삭제",
+                given="사용자가 장바구니 페이지에 있다",
+                when="상품 옆의 삭제 버튼을 클릭한다",
+                then="해당 상품이 장바구니에서 제거되고 총 금액이 재계산된다"
+            ),
+            GherkinScenario(
+                feature="주문 관리",
+                scenario="주문 완료",
+                given="사용자가 결제를 완료했다",
+                when="주문 확인 페이지에서 주문 내역을 확인한다",
+                then="주문 번호와 배송 예정일이 표시된다"
+            ),
+            GherkinScenario(
+                feature="주문 관리",
+                scenario="주문 내역 조회",
+                given="사용자가 마이페이지에 있다",
+                when="'주문 내역' 메뉴를 클릭한다",
+                then="과거 주문 목록이 날짜순으로 표시된다"
+            ),
+            GherkinScenario(
+                feature="주문 관리",
+                scenario="주문 상세 조회",
+                given="사용자가 주문 내역 페이지에 있다",
+                when="특정 주문을 선택하고 상세보기를 클릭한다",
+                then="주문 상품, 결제 금액, 배송 상태가 표시된다"
+            ),
+            GherkinScenario(
+                feature="배송 추적",
+                scenario="배송 상태 확인",
+                given="사용자가 주문 상세 페이지에 있다",
+                when="'배송 조회' 버튼을 클릭한다",
+                then="현재 배송 상태와 예상 도착일이 표시된다"
+            ),
+            GherkinScenario(
+                feature="상품 리뷰",
+                scenario="리뷰 작성",
+                given="사용자가 구매한 상품의 상세 페이지에 있다",
+                when="리뷰 작성 버튼을 클릭하고 별점과 내용을 입력한 후 등록한다",
+                then="리뷰가 상품 페이지에 표시되고 평균 별점이 업데이트된다"
+            ),
+            GherkinScenario(
+                feature="상품 리뷰",
+                scenario="리뷰 필터링",
+                given="사용자가 상품 상세 페이지의 리뷰 섹션에 있다",
+                when="별점 필터를 선택한다",
+                then="선택한 별점의 리뷰만 표시된다"
+            ),
+            GherkinScenario(
+                feature="위시리스트",
+                scenario="위시리스트 추가",
+                given="사용자가 상품 상세 페이지에 있다",
+                when="'찜하기' 버튼을 클릭한다",
+                then="상품이 위시리스트에 추가되고 하트 아이콘이 활성화된다"
+            ),
+            GherkinScenario(
+                feature="위시리스트",
+                scenario="위시리스트 조회",
+                given="사용자가 마이페이지에 있다",
+                when="'찜한 상품' 메뉴를 클릭한다",
+                then="저장한 상품 목록이 표시된다"
+            ),
+            GherkinScenario(
+                feature="쿠폰 사용",
+                scenario="쿠폰 적용",
+                given="사용자가 결제 페이지에 있고 사용 가능한 쿠폰이 있다",
+                when="쿠폰 선택 버튼을 클릭하고 쿠폰을 선택한다",
+                then="할인이 적용되고 최종 결제 금액이 업데이트된다"
+            ),
+            GherkinScenario(
+                feature="환불/교환",
+                scenario="환불 신청",
+                given="사용자가 주문 상세 페이지에서 배송 완료된 주문을 선택했다",
+                when="'환불 신청' 버튼을 클릭하고 사유를 입력한 후 제출한다",
+                then="환불 요청이 접수되고 처리 상태를 확인할 수 있다"
             ),
         ])
 
