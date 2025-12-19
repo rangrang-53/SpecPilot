@@ -33,8 +33,8 @@ def _generate_tech_stack(
     tech_stack = []
 
     # 입력 텍스트 분석 (소문자 변환)
-    input_lower = user_input.lower()
-    scale_lower = scale.lower()
+    input_lower = user_input.lower() if user_input else ""
+    scale_lower = scale.lower() if scale else ""
 
     # 1. Backend 기술 스택 결정
     backend_tech = []
@@ -107,7 +107,7 @@ def _generate_tech_stack(
     devops_tech = []
     devops_rationale = ""
 
-    deployment_lower = deployment.lower()
+    deployment_lower = deployment.lower() if deployment else ""
 
     if is_large_scale:
         # 대규모: Kubernetes 기반
@@ -145,7 +145,7 @@ def _generate_tech_stack(
             rationale="실시간 메시징과 알림을 위해 Redis Pub/Sub와 WebSocket 프로토콜을 사용합니다."
         ))
 
-    if payment != "지정되지 않음" and any(keyword in payment.lower() for keyword in ["pg", "결제", "카드", "간편결제"]):
+    if payment and payment != "지정되지 않음" and any(keyword in payment.lower() for keyword in ["pg", "결제", "카드", "간편결제"]):
         tech_stack.append(TechStackRecommendation(
             category="Payment",
             technologies=["PG 연동 API", "토스페이먼츠", "카카오페이"],
@@ -174,7 +174,7 @@ def _generate_test_scenarios(
         Gherkin 테스트 시나리오 리스트
     """
     scenarios = []
-    input_lower = user_input.lower()
+    input_lower = user_input.lower() if user_input else ""
 
     # 프로젝트 유형 분석
     is_ecommerce = any(keyword in input_lower for keyword in ["쇼핑", "이커머스", "커머스", "주문", "장바구니"])
@@ -407,7 +407,7 @@ def _generate_functional_requirements(
         기능 요구사항 리스트
     """
     requirements = []
-    input_lower = user_input.lower()
+    input_lower = user_input.lower() if user_input else ""
     fr_id = 1
 
     # 프로젝트 유형 분석
