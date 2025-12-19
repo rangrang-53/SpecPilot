@@ -86,13 +86,37 @@ def judge_agent(state: RequirementState) -> RequirementState:
 
         feedback = " ".join(feedback_lines[:3])  # 최대 3줄
 
-        # State 업데이트
-        if decision == "approve" or completeness_score >= 0.7:
+        # CRITICAL: LLM 응답에 상관없이 필수 항목 체크 수행
+        has_auth = "authentication" in state.collected_info
+        has_deployment = "deployment" in state.collected_info
+        has_scale = "scale" in state.collected_info
+
+        project_type = state.collected_info.get("project_type", "")
+        needs_payment = any(keyword in str(project_type).lower()
+                           for keyword in ["이커머스", "쇼핑", "예약", "결제"])
+        has_payment = "payment" in state.collected_info
+
+        missing_items = []
+        if not has_auth:
+            missing_items.append("인증 방식")
+        if not has_deployment:
+            missing_items.append("배포 환경")
+        if not has_scale:
+            missing_items.append("예상 규모")
+        if needs_payment and not has_payment:
+            missing_items.append("결제 수단")
+
+        # State 업데이트: LLM approve + 필수 항목 모두 충족해야 complete
+        if (decision == "approve" or completeness_score >= 0.7) and not missing_items:
             state.is_complete = True
             state.judge_feedback = feedback or "충분한 정보가 수집되었습니다. SRS 문서를 생성할 수 있습니다."
         else:
             state.is_complete = False
-            state.judge_feedback = feedback or "추가 정보가 필요합니다."
+            if missing_items:
+                missing_str = ", ".join(missing_items)
+                state.judge_feedback = f"추가 정보 필요: {missing_str}"
+            else:
+                state.judge_feedback = feedback or "추가 정보가 필요합니다."
 
     except Exception as e:
         print(f"⚠️ Judge Agent LLM error: {e}")
