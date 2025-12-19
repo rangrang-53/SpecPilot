@@ -156,6 +156,10 @@ class InfoExtractor:
         Returns:
             추출된 정보 딕셔너리 (핵심 정보만 포함)
         """
+        # text가 None이거나 빈 문자열이면 빈 딕셔너리 반환
+        if not text:
+            return {}
+
         if existing_info is None:
             existing_info = {}
 
