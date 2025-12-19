@@ -17,41 +17,6 @@ def consultant_agent(state: RequirementState) -> RequirementState:
     Returns:
         업데이트된 요구사항 상태
     """
-    # CRITICAL: 사용자가 예시를 요청하는 경우 감지
-    user_input_lower = state.user_input.lower() if state.user_input else ""
-    example_keywords = [
-        "예시", "예를들면", "예를 들면", "예를들어", "예를 들어", "예는", "예제", "구체적으로", "어떤 걸", "어떤거"
-    ]
-    is_asking_example = any(keyword in user_input_lower for keyword in example_keywords)
-
-    # 디버그 로그
-    print(f"🔍 [DEBUG] User input: '{state.user_input}'")
-    print(f"🔍 [DEBUG] User input lowercase: '{user_input_lower}'")
-    print(f"🔍 [DEBUG] Is asking example: {is_asking_example}")
-    if is_asking_example:
-        matched = [k for k in example_keywords if k in user_input_lower]
-        print(f"🔍 [DEBUG] Matched keywords: {matched}")
-
-    # 예시 요청인 경우, 마지막 질문 확인
-    if is_asking_example and len(state.messages) >= 2:
-        last_assistant_msg = None
-        for msg in reversed(state.messages):
-            if msg.role == "assistant":
-                last_assistant_msg = msg.content
-                break
-
-        if last_assistant_msg:
-            # 예시를 제공하는 응답 생성
-            example_response = _generate_example_response(last_assistant_msg, state.collected_info)
-            if example_response:
-                state.messages.append(
-                    Message(
-                        role="assistant",
-                        content=example_response
-                    )
-                )
-                return state
-
     # LLM 클라이언트 가져오기
     llm_client = get_gemini_client()
 
@@ -75,9 +40,6 @@ def consultant_agent(state: RequirementState) -> RequirementState:
             user_message=user_prompt
         )
 
-        print(f"🔍 [DEBUG] Consultant LLM Response: {response}")
-        print(f"🔍 [DEBUG] Collected info: {state.collected_info}")
-
         # 응답 파싱: 프롬프트가 "질문만 출력"하라고 했으므로 전체 응답을 질문으로 사용
         response_clean = response.strip()
 
@@ -88,18 +50,26 @@ def consultant_agent(state: RequirementState) -> RequirementState:
             questions = [first_line]
         else:
             # 질문 형태가 아니면 fallback
-            print(f"⚠️ [DEBUG] LLM response is not a question: {response_clean}")
             questions = ["프로젝트에 대해 더 자세히 설명해주실 수 있나요?"]
 
         # State 업데이트
         state.questions = questions
 
-        # 메시지 추가
+        # 메시지 추가 (예시 포함)
         if questions:
+            main_question = questions[0]
+            # 질문에 맞는 예시 추가
+            example_hint = _get_example_hint_for_question(main_question, state.collected_info)
+
+            if example_hint:
+                full_message = f"추가 정보가 필요합니다:\n\n{main_question}\n\n{example_hint}"
+            else:
+                full_message = f"추가 정보가 필요합니다:\n\n{main_question}"
+
             state.messages.append(
                 Message(
                     role="assistant",
-                    content=f"추가 정보가 필요합니다:\n\n{questions[0]}"
+                    content=full_message
                 )
             )
 
@@ -122,6 +92,52 @@ def consultant_agent(state: RequirementState) -> RequirementState:
         )
 
     return state
+
+
+def _get_example_hint_for_question(question: str, collected_info: dict) -> str:
+    """
+    질문에 맞는 간단한 예시 힌트 생성 (인라인용)
+
+    Args:
+        question: 생성된 질문
+        collected_info: 수집된 정보
+
+    Returns:
+        예시 힌트 문자열 (없으면 None)
+    """
+    question_lower = question.lower() if question else ""
+
+    # 결제 관련 질문
+    if "결제" in question_lower or "pg" in question_lower:
+        return "💡 예: 토스페이먼츠, KG이니시스, 카카오페이, 네이버페이 등"
+
+    # 인증 관련 질문
+    elif "인증" in question_lower or "로그인" in question_lower:
+        return "💡 예: JWT 토큰, OAuth 2.0, 소셜로그인(카카오/네이버/구글) 등"
+
+    # 규모 관련 질문
+    elif "규모" in question_lower or "사용자" in question_lower or "트래픽" in question_lower or "접속" in question_lower:
+        return "💡 예: 일 500명, 일 1,000~5,000명, 동시접속 100명 등"
+
+    # 배포 환경 관련 질문
+    elif "배포" in question_lower or "서버" in question_lower or "인프라" in question_lower or "클라우드" in question_lower:
+        return "💡 예: AWS, GCP, Azure, Docker/Kubernetes 등"
+
+    # 기능 관련 질문
+    elif "기능" in question_lower:
+        project_type = collected_info.get("project_type", "")
+        if "이커머스" in project_type or "쇼핑" in project_type:
+            return "💡 예: 상품 검색/필터링, 장바구니, 주문/결제, 리뷰, 위시리스트 등"
+        else:
+            return "💡 예: 회원가입, 게시글 작성, 댓글, 검색, 알림 등"
+
+    # 데이터베이스 관련 질문
+    elif "데이터베이스" in question_lower or "db" in question_lower:
+        return "💡 예: PostgreSQL, MySQL, MongoDB, Redis 등"
+
+    # 기타 - 힌트 없음
+    else:
+        return None
 
 
 def _generate_example_response(last_question: str, collected_info: dict) -> str:
