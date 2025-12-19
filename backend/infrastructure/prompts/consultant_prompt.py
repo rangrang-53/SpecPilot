@@ -29,10 +29,21 @@ Already collected information:
 Latest user response:
 {user_input}
 
-Generate ONE short question (max 15 words) about a COMPLETELY DIFFERENT topic.
-Do NOT ask about anything already covered in the collected information.
-Ask about technical details, infrastructure, scale, or deployment that haven't been discussed yet.
+**PRIORITY RULES - Ask in this order:**
+1. If project is 이커머스/쇼핑/예약 and NO payment info → Ask about payment method (PG사)
+2. If NO authentication info → Ask about authentication method
+3. If NO scale info → Ask about expected user scale
+4. If NO deployment info → Ask about deployment environment
+5. Otherwise → Ask about other technical details
+
+Generate ONE short question (max 15 words) about the HIGHEST PRIORITY missing information.
+Do NOT ask about anything already in collected_info.
 Output ONLY the question itself, nothing else.
+
+Examples based on priority:
+- Missing payment (이커머스): "어떤 결제 PG사를 사용하시나요?"
+- Missing auth: "회원 인증 방식은 어떻게 하시나요?"
+- Missing scale: "예상 사용자 수는 얼마나 되나요?"
 """
 
 
