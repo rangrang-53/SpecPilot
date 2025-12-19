@@ -627,6 +627,10 @@ def _extract_info_smart(collected_info: dict, category: str, default: str = None
         if not key.startswith("response_"):
             continue
 
+        # value가 None이거나 빈 문자열이면 스킵
+        if not value:
+            continue
+
         value_lower = value.lower()
 
         # 카테고리별 키워드 기반 추출
