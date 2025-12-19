@@ -129,8 +129,9 @@ def _generate_tech_stack(
         devops_rationale = "빠른 배포와 간편한 관리를 위해 Heroku PaaS를 사용합니다."
     else:
         # 기본
-        devops_tech = ["Docker", "Docker Compose", deployment if deployment != "지정되지 않음" else "AWS EC2"]
-        devops_rationale = f"Docker 컨테이너화를 통해 일관된 환경을 보장하고, {deployment if deployment != '지정되지 않음' else 'AWS EC2'}에 배포합니다."
+        deploy_target = deployment if (deployment and deployment != "지정되지 않음") else "AWS EC2"
+        devops_tech = ["Docker", "Docker Compose", deploy_target]
+        devops_rationale = f"Docker 컨테이너화를 통해 일관된 환경을 보장하고, {deploy_target}에 배포합니다."
 
     tech_stack.append(TechStackRecommendation(
         category="DevOps",
