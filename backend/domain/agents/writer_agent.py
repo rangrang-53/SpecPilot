@@ -602,80 +602,96 @@ def _generate_functional_requirements(
     return requirements
 
 
-def _extract_info_smart(collected_info: dict, category: str, default: str = "지정되지 않음") -> str:
+def _extract_info_smart(collected_info: dict, category: str, default: str = None) -> str:
     """
     collected_info에서 특정 카테고리 정보를 스마트하게 추출
+    InfoExtractor에서 이미 추출된 깔끔한 정보를 우선 사용
 
     Args:
         collected_info: 수집된 정보 딕셔너리
         category: 추출할 카테고리 (payment, authentication, scale, deployment, project_type)
-        default: 기본값
+        default: 기본값 (None이면 정보 없음)
 
     Returns:
-        추출된 정보 문자열
+        추출된 정보 문자열 또는 None
     """
-    # 1. 먼저 카테고리 키로 직접 조회
+    # 1. InfoExtractor가 이미 추출한 정보가 있으면 우선 사용
     if category in collected_info and collected_info[category]:
-        return collected_info[category]
+        value = collected_info[category]
+        # 값이 긴 문장이 아닌 경우만 반환 (InfoExtractor가 제대로 추출한 경우)
+        if len(value) < 50:  # 50자 이하만 유효한 정보로 간주
+            return value
 
-    # 2. initial_request와 response_X에서 키워드 검색
-    all_text = ""
+    # 2. response_X에서 수동으로 추출 (백업)
     for key, value in collected_info.items():
-        if key.startswith("initial_request") or key.startswith("response_"):
-            all_text += f" {value}"
+        if not key.startswith("response_"):
+            continue
 
-    all_text_lower = all_text.lower()
+        value_lower = value.lower()
 
-    # 3. 카테고리별 키워드 기반 추출
-    if category == "payment":
-        pg_keywords = ["kg", "이니시스", "토스", "나이스", "페이팔", "페이코", "카카오페이", "네이버페이"]
-        for keyword in pg_keywords:
-            if keyword in all_text_lower:
-                # 원본 텍스트에서 해당 부분 추출 (대소문자 유지)
-                for word in all_text.split():
-                    if keyword in word.lower():
-                        return f"{word} PG"
-        if "결제" in all_text_lower or "pg" in all_text_lower:
-            return "결제 시스템 필요"
+        # 카테고리별 키워드 기반 추출
+        if category == "payment":
+            pg_map = {
+                "kg": "KG 이니시스",
+                "이니시스": "KG 이니시스",
+                "토스": "토스페이먼츠",
+                "나이스": "나이스페이먼츠",
+                "페이팔": "PayPal",
+                "페이코": "PAYCO",
+                "카카오페이": "카카오페이",
+                "네이버페이": "네이버페이"
+            }
+            for keyword, pg_name in pg_map.items():
+                if keyword in value_lower:
+                    return pg_name
 
-    elif category == "authentication":
-        auth_keywords = ["oauth", "jwt", "소셜로그인", "카카오", "네이버", "구글", "인증"]
-        for keyword in auth_keywords:
-            if keyword in all_text_lower:
-                return f"{keyword} 기반 인증"
+        elif category == "authentication":
+            if "oauth" in value_lower:
+                return "OAuth 2.0"
+            if "jwt" in value_lower:
+                return "JWT 토큰 인증"
+            socials = []
+            if "카카오" in value_lower:
+                socials.append("카카오")
+            if "네이버" in value_lower:
+                socials.append("네이버")
+            if "구글" in value_lower:
+                socials.append("구글")
+            if socials:
+                return f"{'/'.join(socials)} 소셜 로그인"
 
-    elif category == "scale":
-        # 숫자 패턴 찾기
-        import re
-        numbers = re.findall(r'(\d+)(?:명|만|천)', all_text)
-        if numbers:
-            return f"{numbers[0]}명 규모"
-        if "대규모" in all_text_lower:
-            return "대규모 프로젝트"
-        if "소규모" in all_text_lower:
-            return "소규모 프로젝트"
+        elif category == "scale":
+            import re
+            # "월 1만 명", "500명" 등 패턴 찾기
+            patterns = [
+                r'(\d+)\s*만\s*명',
+                r'(\d+)\s*천\s*명',
+                r'(\d+)\s*명'
+            ]
+            for pattern in patterns:
+                match = re.search(pattern, value)
+                if match:
+                    number = match.group(1)
+                    if "만" in value:
+                        return f"{number}만 명"
+                    elif "천" in value:
+                        return f"{number}천 명"
+                    else:
+                        return f"{number}명"
 
-    elif category == "deployment":
-        deploy_keywords = ["aws", "gcp", "azure", "클라우드", "온프레미스", "도커", "쿠버네티스"]
-        for keyword in deploy_keywords:
-            if keyword in all_text_lower:
-                return f"{keyword.upper()} 환경"
-
-    elif category == "project_type":
-        type_keywords = {
-            "쇼핑몰": "이커머스",
-            "이커머스": "이커머스",
-            "인트라넷": "인트라넷",
-            "사내": "인트라넷",
-            "그룹웨어": "인트라넷",
-            "sns": "소셜",
-            "커뮤니티": "소셜",
-            "배달": "배달 서비스",
-            "예약": "예약 시스템"
-        }
-        for keyword, ptype in type_keywords.items():
-            if keyword in all_text_lower:
-                return ptype
+        elif category == "deployment":
+            deploy_map = {
+                "aws": "AWS",
+                "gcp": "GCP",
+                "azure": "Azure",
+                "클라우드": "클라우드",
+                "온프레미스": "온프레미스",
+                "도커": "Docker",
+                "쿠버네티스": "Kubernetes"
+            }
+            for keyword, deploy_name in deploy_map.items():
+                if keyword in value_lower:
+                    return deploy_name
 
     return default
 
@@ -692,29 +708,35 @@ def writer_agent(state: RequirementState) -> RequirementState:
     """
     # collected_info에서 사용자 답변 추출 (스마트 추출 함수 사용)
     project_name = _extract_info_smart(state.collected_info, "project_type", "프로젝트")
-    payment_info = _extract_info_smart(state.collected_info, "payment", "지정되지 않음")
-    scale_info = _extract_info_smart(state.collected_info, "scale", "지정되지 않음")
-    auth_info = _extract_info_smart(state.collected_info, "authentication", "지정되지 않음")
-    deployment_info = _extract_info_smart(state.collected_info, "deployment", "지정되지 않음")
+    payment_info = _extract_info_smart(state.collected_info, "payment", None)
+    scale_info = _extract_info_smart(state.collected_info, "scale", None)
+    auth_info = _extract_info_smart(state.collected_info, "authentication", None)
+    deployment_info = _extract_info_smart(state.collected_info, "deployment", None)
 
-    # 사용자 입력을 반영한 개요 생성
+    # 사용자 입력을 반영한 개요 생성 (수집된 정보만 표시)
+    requirements_list = []
+    requirements_list.append(f"- 프로젝트 유형: {project_name}")
+    if payment_info:
+        requirements_list.append(f"- 결제 수단: {payment_info}")
+    if scale_info:
+        requirements_list.append(f"- 예상 규모: {scale_info}")
+    if auth_info:
+        requirements_list.append(f"- 인증 방식: {auth_info}")
+    if deployment_info:
+        requirements_list.append(f"- 배포 환경: {deployment_info}")
+
     overview = f"""
-{state.user_input}
+{state.collected_info.get('initial_request', state.user_input)}
 
 **수집된 요구사항:**
-- 프로젝트명: {project_name}
-- 결제 수단: {payment_info}
-- 규모: {scale_info}
-- 인증 방식: {auth_info}
-- 배포 환경: {deployment_info}
+{chr(10).join(requirements_list)}
     """.strip()
 
-    # 비기능 요구사항에 사용자 답변 반영
-    nfr_list = [
-        "응답 시간: 평균 1초 이내",
-        f"예상 규모: {scale_info}",
-        "가용성: 99.9% uptime"
-    ]
+    # 비기능 요구사항에 사용자 답변 반영 (정보가 있는 경우만)
+    nfr_list = ["응답 시간: 평균 1초 이내"]
+    if scale_info:
+        nfr_list.append(f"예상 규모: {scale_info}")
+    nfr_list.append("가용성: 99.9% uptime")
 
     # 동적 기능 요구사항 생성 - 프로젝트 유형에 맞춰 생성
     functional_requirements_list = _generate_functional_requirements(
@@ -741,13 +763,19 @@ def writer_agent(state: RequirementState) -> RequirementState:
         payment_info
     )
 
-    # Assumptions에 사용자 답변 반영
-    assumptions_list = [
-        f"{deployment_info} 클라우드 인프라를 사용합니다" if deployment_info != "지정되지 않음" else "클라우드 인프라를 사용합니다",
-        "개발 기간은 3개월로 가정합니다",
-        f"결제 수단: {payment_info}",
-        f"인증 방식: {auth_info}"
-    ]
+    # Assumptions에 사용자 답변 반영 (정보가 있는 경우만 추가)
+    assumptions_list = []
+    if deployment_info:
+        assumptions_list.append(f"{deployment_info} 환경에 배포합니다")
+    else:
+        assumptions_list.append("클라우드 인프라 사용을 가정합니다")
+
+    assumptions_list.append("개발 기간은 3개월로 가정합니다")
+
+    if payment_info:
+        assumptions_list.append(f"결제 수단: {payment_info}")
+    if auth_info:
+        assumptions_list.append(f"인증 방식: {auth_info}")
 
     # SRS 문서 생성
     dummy_srs = SRSDocument(

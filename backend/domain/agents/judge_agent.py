@@ -90,17 +90,36 @@ def judge_agent(state: RequirementState) -> RequirementState:
 
     except Exception as e:
         print(f"⚠️ Judge Agent LLM error: {e}")
-        print("⚠️ Falling back to simple evaluation")
+        print("⚠️ Falling back to strict evaluation")
 
-        # Fallback: 간단한 평가 로직
+        # Fallback: 엄격한 평가 로직
         info_count = len(state.collected_info)
-        required_count = 4
+        required_count = 5  # 최소 5개 정보 필요
 
-        if info_count >= required_count:
+        # 필수 카테고리 확인
+        has_project_type = "project_type" in state.collected_info
+        has_scale = "scale" in state.collected_info
+        has_auth = "authentication" in state.collected_info
+        has_deployment = "deployment" in state.collected_info
+
+        missing_items = []
+        if not has_auth:
+            missing_items.append("인증 방식")
+        if not has_deployment:
+            missing_items.append("배포 환경")
+        if not has_scale:
+            missing_items.append("예상 규모")
+
+        # 정보 개수와 필수 항목 모두 충족해야 approve
+        if info_count >= required_count and not missing_items:
             state.is_complete = True
             state.judge_feedback = "충분한 정보가 수집되었습니다. SRS 문서를 생성할 수 있습니다."
         else:
             state.is_complete = False
-            state.judge_feedback = f"추가 정보가 필요합니다. (현재 {info_count}/{required_count}개 정보 수집됨)"
+            if missing_items:
+                missing_str = ", ".join(missing_items)
+                state.judge_feedback = f"추가 정보 필요: {missing_str} (현재 {info_count}/{required_count}개 수집)"
+            else:
+                state.judge_feedback = f"추가 정보가 필요합니다. (현재 {info_count}/{required_count}개 정보 수집됨)"
 
     return state
