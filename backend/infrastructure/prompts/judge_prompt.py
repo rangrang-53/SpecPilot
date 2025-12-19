@@ -49,6 +49,12 @@ def get_judge_prompt(collected_info: dict, conversation_history: str) -> str:
     Returns:
         완성된 프롬프트
     """
+    # None 체크
+    if collected_info is None:
+        collected_info = {}
+    if conversation_history is None:
+        conversation_history = ""
+
     return JUDGE_USER_PROMPT.format(
         collected_info=collected_info,
         conversation_history=conversation_history
