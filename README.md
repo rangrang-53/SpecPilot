@@ -44,17 +44,19 @@ User Input
 └──────────────────────┘
 ```
 
-### 1. **Consultant Agent** (Google Gemini 기반)
+### 1. **Consultant Agent** (Google Gemini 2.0 Flash 기반)
 - Business Analyst처럼 동작
 - 사용자 입력 분석 → **컨텍스트 기반 질문 생성**
 - 정적인 질문이 아닌, 프로젝트별 맞춤 질문
 - 답변에서 자동으로 정보 추출 및 저장
+- 우선순위 기반 질문 (결제 → 인증 → 규모 → 배포)
 
-### 2. **Judge Agent** (Google Gemini 기반)
+### 2. **Judge Agent** (Google Gemini 2.0 Flash 기반)
 - QA/PM처럼 동작
 - 수집된 정보의 **질** 평가
-- 4가지 기준: 기능적 명확성, 기술적 실현 가능성, NFR, 테스트 가능성
+- 필수 항목 체크: 인증, 배포, 규모, 결제(이커머스 시)
 - 부족 시 Consultant에게 추가 질문 요청, 충분 시 Writer로 이동
+- 최대 10회 반복으로 과도한 질문 방지
 
 ### 3. **Writer Agent** (규칙 기반 엔진)
 - **동적 기술 스택 선택**:
@@ -73,8 +75,8 @@ User Input
 ## 🏗 Architecture
 
 ### Tech Stack
-- **AI/LLM**: Google Gemini 1.5 Pro
-- **Workflow Orchestration**: LangGraph (Multi-Agent State Machine)
+- **AI/LLM**: Google Gemini 2.0 Flash (Experimental)
+- **Workflow Orchestration**: Custom Multi-Agent State Machine
 - **Backend**: Python 3.11+, Pydantic (Type-Safe)
 - **Frontend**: Streamlit (단일 통합 배포)
 - **Architecture Pattern**: Clean Architecture + Multi-Agent System
