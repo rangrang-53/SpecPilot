@@ -547,7 +547,7 @@ def show_completion_screen():
 
             with col1:
                 if st.button("← 대화 보기", use_container_width=True):
-                    st.session_state.current_stage = "interview"
+                    st.session_state.current_stage = "history"
                     st.rerun()
 
             with col3:
@@ -620,13 +620,73 @@ Then {scenario['then']}
         st.code(traceback.format_exc())
 
 
+def show_conversation_history():
+    """대화 내역 화면 (read-only)"""
+    # 헤더
+    st.title("✈️ SpecPilot")
+    st.caption("💬 대화 내역")
+
+    st.divider()
+
+    # 채팅 히스토리 표시 (read-only)
+    chat_container = st.container()
+
+    with chat_container:
+        if not st.session_state.messages:
+            st.info("대화 내역이 없습니다.")
+        else:
+            for idx, msg in enumerate(st.session_state.messages):
+                if msg["role"] == "user":
+                    # User Message - 파란색 박스 (우측 정렬)
+                    st.markdown(f"""
+                    <div style='display: flex; justify-content: flex-end; margin: 15px 0;'>
+                        <div style='background-color: #eff6ff; border: 1px solid #3b82f6; border-radius: 12px; padding: 15px; max-width: 70%;'>
+                            <p style='font-size: 12px; color: #6b7280; margin: 0;'>👤 You</p>
+                            <p style='font-size: 14px; color: #1e3a8a; margin-top: 8px; margin-bottom: 0;'>{msg["content"]}</p>
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                else:
+                    # AI Question Card - 녹색 박스
+                    st.markdown(f"""
+                    <div style='background-color: #f0fdf4; border: 2px solid #10b981; border-radius: 12px; padding: 20px; margin: 15px 0;'>
+                        <p style='font-size: 14px; color: #065f46; font-weight: bold; margin: 0;'>🧑‍✈️ Consultant Agent</p>
+                        <p style='font-size: 13px; color: #374151; margin: 10px 0;'>추가 정보가 필요합니다. 다음 질문에 답변해 주세요:</p>
+                        <div style='background-color: white; border: 1px solid #d1d5db; border-radius: 6px; padding: 12px; margin-top: 10px;'>
+                            <p style='font-size: 14px; color: #374151; margin: 0;'>{msg["content"]}</p>
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
+
+    st.divider()
+
+    # 액션 버튼
+    col1, col2 = st.columns([1, 1])
+
+    with col1:
+        if st.button("← SRS 문서로 돌아가기", use_container_width=True):
+            st.session_state.current_stage = "complete"
+            st.rerun()
+
+    with col2:
+        if st.button("+ 새 프로젝트", use_container_width=True, type="primary"):
+            st.session_state.session_id = None
+            st.session_state.messages = []
+            st.session_state.is_complete = False
+            st.session_state.iteration_count = 0
+            st.session_state.current_stage = "initial"
+            st.rerun()
+
+
 def main():
     """메인 애플리케이션"""
     # 사이드바 렌더링
     render_sidebar()
 
     # 메인 영역 - 현재 상태에 따라 화면 전환
-    if st.session_state.is_complete:
+    if st.session_state.current_stage == "history":
+        show_conversation_history()
+    elif st.session_state.is_complete:
         show_completion_screen()
     elif st.session_state.session_id:
         show_qa_screen()
