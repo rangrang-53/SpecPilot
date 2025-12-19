@@ -20,7 +20,7 @@ def consultant_agent(state: RequirementState) -> RequirementState:
     # CRITICAL: 사용자가 예시를 요청하는 경우 감지
     user_input_lower = state.user_input.lower() if state.user_input else ""
     is_asking_example = any(keyword in user_input_lower for keyword in [
-        "예시", "예를 들면", "예를 들어", "예는", "예제", "구체적으로", "어떤 걸"
+        "예시", "예를들면", "예를 들면", "예를들어", "예를 들어", "예는", "예제", "구체적으로", "어떤 걸", "어떤거"
     ])
 
     # 예시 요청인 경우, 마지막 질문 확인
