@@ -17,6 +17,32 @@ def consultant_agent(state: RequirementState) -> RequirementState:
     Returns:
         업데이트된 요구사항 상태
     """
+    # CRITICAL: 사용자가 예시를 요청하는 경우 감지
+    user_input_lower = state.user_input.lower() if state.user_input else ""
+    is_asking_example = any(keyword in user_input_lower for keyword in [
+        "예시", "예를 들면", "예를 들어", "예는", "예제", "구체적으로", "어떤 걸"
+    ])
+
+    # 예시 요청인 경우, 마지막 질문 확인
+    if is_asking_example and len(state.messages) >= 2:
+        last_assistant_msg = None
+        for msg in reversed(state.messages):
+            if msg.role == "assistant":
+                last_assistant_msg = msg.content
+                break
+
+        if last_assistant_msg:
+            # 예시를 제공하는 응답 생성
+            example_response = _generate_example_response(last_assistant_msg, state.collected_info)
+            if example_response:
+                state.messages.append(
+                    Message(
+                        role="assistant",
+                        content=example_response
+                    )
+                )
+                return state
+
     # LLM 클라이언트 가져오기
     llm_client = get_gemini_client()
 
@@ -87,3 +113,88 @@ def consultant_agent(state: RequirementState) -> RequirementState:
         )
 
     return state
+
+
+def _generate_example_response(last_question: str, collected_info: dict) -> str:
+    """
+    마지막 질문에 대한 예시를 제공하는 응답 생성
+
+    Args:
+        last_question: 마지막으로 한 질문
+        collected_info: 수집된 정보
+
+    Returns:
+        예시를 포함한 응답 문자열
+    """
+    question_lower = last_question.lower() if last_question else ""
+
+    # 결제 관련 질문
+    if "결제" in question_lower or "pg" in question_lower:
+        return """예를 들어:
+- 토스페이먼츠
+- KG 이니시스
+- 나이스페이먼츠
+- 카카오페이
+- 네이버페이
+
+위 중에서 선택하거나 사용하실 PG사를 말씀해주세요."""
+
+    # 인증 관련 질문
+    elif "인증" in question_lower or "로그인" in question_lower:
+        return """예를 들어:
+- JWT 토큰 인증
+- OAuth 2.0
+- 소셜 로그인 (카카오, 네이버, 구글)
+- 이메일/비밀번호 인증
+
+어떤 방식을 사용하실 건가요?"""
+
+    # 규모 관련 질문
+    elif "규모" in question_lower or "사용자" in question_lower or "트래픽" in question_lower:
+        return """예를 들어:
+- 소규모: 일 500명 이하
+- 중규모: 일 1,000~5,000명
+- 대규모: 일 1만 명 이상
+- 동시접속: 동시에 100명, 500명 등
+
+예상하시는 규모를 말씀해주세요."""
+
+    # 배포 환경 관련 질문
+    elif "배포" in question_lower or "서버" in question_lower or "인프라" in question_lower:
+        return """예를 들어:
+- AWS (Amazon Web Services)
+- GCP (Google Cloud Platform)
+- Azure (Microsoft Azure)
+- 온프레미스 (자체 서버)
+- Docker, Kubernetes
+
+어떤 환경에 배포하실 건가요?"""
+
+    # 기능 관련 질문
+    elif "기능" in question_lower:
+        project_type = collected_info.get("project_type", "")
+        if "이커머스" in project_type or "쇼핑" in project_type:
+            return """예를 들어:
+- 상품 검색 및 필터링
+- 장바구니 기능
+- 주문 및 결제
+- 리뷰 및 평점
+- 위시리스트
+- 쿠폰/할인 기능
+
+어떤 기능들이 필요하신가요?"""
+        else:
+            return """구체적인 기능들을 말씀해주시면 더 정확한 SRS를 작성할 수 있습니다.
+예: "회원가입, 게시글 작성, 댓글 기능" 등"""
+
+    # 일반적인 예시 요청
+    else:
+        return """구체적으로 어떤 부분에 대한 예시가 필요하신가요?
+
+일반적인 예시:
+- 결제: 토스페이먼츠, KG이니시스 등
+- 인증: JWT, 소셜로그인 등
+- 규모: 일 1000명, 동시접속 100명 등
+- 배포: AWS, GCP 등
+
+원하시는 항목을 선택하거나 직접 답변해주세요."""
