@@ -275,14 +275,6 @@ def render_sidebar():
                 st.session_state.current_stage = "initial"
                 st.rerun()
 
-        st.divider()
-
-        # 도움말 링크
-        st.subheader("❓ 도움말")
-        st.markdown("[📖 사용 가이드](https://github.com/anthropics/specpilot)")
-        st.markdown("[💬 피드백 보내기](https://github.com/anthropics/specpilot/issues)")
-        st.markdown("[🐛 버그 리포트](https://github.com/anthropics/specpilot/issues/new)")
-
 
 def show_initial_screen():
     """초기 화면 (Wireframe 1)"""
