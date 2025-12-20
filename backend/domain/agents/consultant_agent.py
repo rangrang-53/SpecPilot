@@ -97,7 +97,7 @@ def consultant_agent(state: RequirementState) -> RequirementState:
 
 def _get_example_hint_for_question(question: str, collected_info: dict) -> str:
     """
-    질문에 맞는 간단한 예시 힌트 생성 (인라인용)
+    LLM을 사용하여 질문에 맞는 간단한 예시 힌트 생성 (인라인용)
 
     Args:
         question: 생성된 질문
@@ -106,38 +106,54 @@ def _get_example_hint_for_question(question: str, collected_info: dict) -> str:
     Returns:
         예시 힌트 문자열 (없으면 None)
     """
-    question_lower = question.lower() if question else ""
+    try:
+        llm_client = get_gemini_client()
 
-    # 결제 관련 질문
-    if "결제" in question_lower or "pg" in question_lower:
-        return "💡 예: 토스페이먼츠, KG이니시스, 카카오페이, 네이버페이 등"
+        # 프로젝트 컨텍스트 정보
+        project_context = "\n".join([f"- {k}: {v}" for k, v in collected_info.items()]) if collected_info else "없음"
 
-    # 인증 관련 질문
-    elif "인증" in question_lower or "로그인" in question_lower:
-        return "💡 예: JWT 토큰, OAuth 2.0, 소셜로그인(카카오/네이버/구글) 등"
+        # LLM에게 예시 생성 요청
+        example_prompt = f"""다음 질문에 대한 간단한 인라인 예시를 생성해주세요.
 
-    # 규모 관련 질문
-    elif "규모" in question_lower or "사용자" in question_lower or "트래픽" in question_lower or "접속" in question_lower:
-        return "💡 예: 일 500명, 일 1,000~5,000명, 동시접속 100명 등"
+질문: {question}
 
-    # 배포 환경 관련 질문
-    elif "배포" in question_lower or "서버" in question_lower or "인프라" in question_lower or "클라우드" in question_lower:
-        return "💡 예: AWS, GCP, Azure, Docker/Kubernetes 등"
+프로젝트 정보:
+{project_context}
 
-    # 기능 관련 질문
-    elif "기능" in question_lower:
-        project_type = collected_info.get("project_type", "")
-        if "이커머스" in project_type or "쇼핑" in project_type:
-            return "💡 예: 상품 검색/필터링, 장바구니, 주문/결제, 리뷰, 위시리스트 등"
+요구사항:
+1. 한 줄로 3-5개의 구체적인 예시만 제공
+2. "💡 예:" 형식으로 시작
+3. 쉼표로 구분하고 마지막에 "등" 추가
+4. 질문 내용과 관련 없으면 "SKIP" 출력
+
+예시 형식:
+💡 예: 토스페이먼츠, KG이니시스, 카카오페이, 네이버페이 등
+
+예시를 생성하세요:"""
+
+        response = llm_client.generate(example_prompt)
+        example_hint = response.strip()
+
+        print(f"[DEBUG] Question: {question}")
+        print(f"[DEBUG] LLM Response: {example_hint}")
+
+        # "SKIP"이면 예시 없음
+        if "SKIP" in example_hint.upper():
+            print("[DEBUG] SKIP detected")
+            return None
+
+        # "💡 예:"로 시작하는지 확인
+        if example_hint.startswith("💡 예:"):
+            print("[DEBUG] Valid format detected")
+            return example_hint
         else:
-            return "💡 예: 회원가입, 게시글 작성, 댓글, 검색, 알림 등"
+            # 형식이 맞지 않으면 None 반환
+            print("[DEBUG] Invalid format")
+            return None
 
-    # 데이터베이스 관련 질문
-    elif "데이터베이스" in question_lower or "db" in question_lower:
-        return "💡 예: PostgreSQL, MySQL, MongoDB, Redis 등"
-
-    # 기타 - 힌트 없음
-    else:
+    except Exception as e:
+        # LLM 호출 실패 시 None 반환 (예시 없이 질문만 표시)
+        print(f"[DEBUG] Exception occurred: {type(e).__name__}")
         return None
 
 
