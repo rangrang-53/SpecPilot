@@ -34,6 +34,7 @@ class StartSessionUseCase:
         return {
             "session_id": session_id,
             "questions": state.questions,
+            "messages": [{"role": msg.role, "content": msg.content} for msg in state.messages],
             "is_complete": state.is_complete,
             "iteration_count": state.iteration_count,
         }

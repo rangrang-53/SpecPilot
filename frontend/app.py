@@ -348,21 +348,10 @@ def show_initial_screen():
                     st.session_state.iteration_count = result.get("iteration_count", 0)
                     st.session_state.is_complete = result.get("is_complete", False)
 
-                    # 메시지 추가
-                    st.session_state.messages.append({
-                        "role": "user",
-                        "content": user_input
-                    })
-
-                    # AI 질문 추가 (하나씩만 표시)
-                    questions = result.get("questions", [])
-                    if questions:
-                        # 첫 번째 질문만 표시
-                        first_question = questions[0]
-                        st.session_state.messages.append({
-                            "role": "assistant",
-                            "content": first_question
-                        })
+                    # 백엔드에서 받은 messages 사용 (예시 포함된 전체 메시지)
+                    backend_messages = result.get("messages", [])
+                    if backend_messages:
+                        st.session_state.messages = backend_messages
 
                     st.success("✅ 세션이 시작되었습니다!")
                     st.rerun()
@@ -402,12 +391,14 @@ def show_qa_screen():
                 """, unsafe_allow_html=True)
             else:
                 # AI Question Card - 녹색 박스
+                # 개행 문자를 <br>로 변환
+                content_html = msg["content"].replace("\n", "<br>")
                 st.markdown(f"""
                 <div style='background-color: #f0fdf4; border: 2px solid #10b981; border-radius: 12px; padding: 20px; margin: 15px 0;'>
                     <p style='font-size: 14px; color: #065f46; font-weight: bold; margin: 0;'>🧑‍✈️ Consultant Agent</p>
                     <p style='font-size: 13px; color: #374151; margin: 10px 0;'>추가 정보가 필요합니다. 다음 질문에 답변해 주세요:</p>
                     <div style='background-color: white; border: 1px solid #d1d5db; border-radius: 6px; padding: 12px; margin-top: 10px;'>
-                        <p style='font-size: 14px; color: #374151; margin: 0;'>{msg["content"]}</p>
+                        <p style='font-size: 14px; color: #374151; margin: 0;'>{content_html}</p>
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
@@ -463,13 +454,10 @@ def show_qa_screen():
                     st.success("문서 생성 완료!")
                     st.rerun()
                 else:
-                    # 추가 질문
-                    questions = result.get("questions", [])
-                    if questions:
-                        st.session_state.messages.append({
-                            "role": "assistant",
-                            "content": questions[0]
-                        })
+                    # 백엔드에서 받은 messages 사용 (예시 포함된 전체 메시지)
+                    backend_messages = result.get("messages", [])
+                    if backend_messages:
+                        st.session_state.messages = backend_messages
                         st.rerun()
 
             except Exception as e:

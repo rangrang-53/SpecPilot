@@ -58,6 +58,7 @@ def consultant_agent(state: RequirementState) -> RequirementState:
         # 메시지 추가 (예시 포함)
         if questions:
             main_question = questions[0]
+
             # 질문에 맞는 예시 추가
             example_hint = _get_example_hint_for_question(main_question, state.collected_info)
 
