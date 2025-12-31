@@ -1,0 +1,28 @@
+{
+  "scenario_name": "이커머스 쇼핑몰",
+  "initial_input": "온라인 의류 쇼핑몰을 만들고 싶습니다.\n\n주요 기능:\n- 상품 검색 및 필터링 (카테고리, 가격, 색상, 사이즈)\n- 장바구니\n- 위시리스트\n- 신용카드 및 간편결제\n- 주문 내역 관리\n- 상품 리뷰 및 평점\n\n예상 규모:\n- 초기 사용자: 월 1만명\n- 상품 수: 5000개\n- 일일 주문: 100-200건",
+  "expected_questions": [
+    {
+      "question": "사용자 인증 방식은 어떻게 하시겠습니까?",
+      "answer": "이메일/비밀번호 방식과 소셜 로그인(카카오, 네이버)을 지원하고 싶습니다."
+    },
+    {
+      "question": "어떤 결제 수단을 지원하시겠습니까?",
+      "answer": "신용카드(Visa, Master, JCB), 간편결제(카카오페이, 네이버페이, 토스페이)를 지원하려고 합니다. KG이니시스 PG사를 사용할 예정입니다."
+    },
+    {
+      "question": "어떤 환경에 배포하실 계획인가요?",
+      "answer": "AWS 클라우드에 배포하고, Docker 컨테이너로 패키징할 예정입니다. CI/CD는 GitHub Actions를 사용하겠습니다."
+    },
+    {
+      "question": "모바일 앱도 필요하신가요?",
+      "answer": "초기에는 반응형 웹으로 시작하고, 나중에 React Native로 모바일 앱을 개발하려고 합니다."
+    }
+  ],
+  "expected_tech_stack": {
+    "backend": ["Spring Boot", "Java 17"],
+    "frontend": ["React.js"],
+    "database": ["PostgreSQL", "Redis", "Elasticsearch"],
+    "infrastructure": ["AWS", "Docker", "Kubernetes", "GitHub Actions"]
+  }
+}

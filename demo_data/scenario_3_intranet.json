@@ -1,0 +1,25 @@
+{
+  "scenario_name": "사내 인트라넷",
+  "initial_input": "직원 200명이 사용하는 사내 인트라넷 시스템을 만들고 싶습니다.\n\n주요 기능:\n- 전자결재 (휴가 신청, 지출 결의)\n- 조직도\n- 공지사항\n- 회의실 예약\n- 근태 관리\n\n보안 요구사항:\n- VPN 또는 사내 네트워크에서만 접속\n- 권한별 접근 제어",
+  "expected_questions": [
+    {
+      "question": "Active Directory나 기존 인증 시스템과 연동하시겠습니까?",
+      "answer": "회사의 Active Directory와 연동하여 기존 계정을 사용하고 싶습니다."
+    },
+    {
+      "question": "사용자 권한은 몇 단계로 나누시겠습니까?",
+      "answer": "일반 직원, 팀장, 부서장, 관리자 4단계로 나누고, 전자결재는 결재선에 따라 순차적으로 승인되어야 합니다."
+    },
+    {
+      "question": "배포 환경은 어떻게 하시겠습니까?",
+      "answer": "사내 서버에 온프레미스로 배포하고, Docker로 패키징하려고 합니다."
+    }
+  ],
+  "expected_tech_stack": {
+    "backend": ["Python", "FastAPI"],
+    "frontend": ["Vue.js"],
+    "database": ["PostgreSQL"],
+    "authentication": ["LDAP", "Active Directory"],
+    "infrastructure": ["On-premise", "Docker"]
+  }
+}

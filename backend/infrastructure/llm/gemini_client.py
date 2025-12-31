@@ -3,7 +3,16 @@ import os
 import json
 import time
 from typing import Optional, Dict, Any
-import google.generativeai as genai
+
+try:
+    # 새로운 google.genai 패키지 시도
+    from google import genai
+    USING_NEW_API = True
+except ImportError:
+    # 레거시 google.generativeai 패키지 사용
+    import google.generativeai as genai
+    USING_NEW_API = False
+
 from config.settings import settings
 
 
@@ -30,24 +39,30 @@ class GeminiClient:
                 "Please set GOOGLE_API_KEY in .env file or pass it to GeminiClient."
             )
 
-        # Gemini 설정
-        genai.configure(api_key=self.api_key)
-
         # 모델 초기화
         self.model_name = settings.model_name
         self.temperature = settings.temperature
 
         print(f"[DEBUG] Initializing Gemini with model: {self.model_name}")
 
-        self.model = genai.GenerativeModel(
-            model_name=self.model_name,
-            generation_config={
-                "temperature": self.temperature,
-                "top_p": 0.95,
-                "top_k": 40,
-                "max_output_tokens": 8192,
-            }
-        )
+        # API 버전에 따라 다르게 초기화
+        if USING_NEW_API:
+            # 새로운 google.genai API
+            self.client = genai.Client(api_key=self.api_key)
+            self.model = None  # 새 API에서는 client를 직접 사용
+        else:
+            # 레거시 google.generativeai API
+            genai.configure(api_key=self.api_key)
+            self.client = None
+            self.model = genai.GenerativeModel(
+                model_name=self.model_name,
+                generation_config={
+                    "temperature": self.temperature,
+                    "top_p": 0.95,
+                    "top_k": 40,
+                    "max_output_tokens": 8192,
+                }
+            )
 
     def generate(
         self,
@@ -71,13 +86,29 @@ class GeminiClient:
         """
         for attempt in range(max_retries):
             try:
-                response = self.model.generate_content(prompt)
+                if USING_NEW_API:
+                    # 새로운 API 사용
+                    response = self.client.models.generate_content(
+                        model=self.model_name,
+                        contents=prompt,
+                        config={
+                            "temperature": self.temperature,
+                            "top_p": 0.95,
+                            "top_k": 40,
+                            "max_output_tokens": 8192,
+                        }
+                    )
+                    response_text = response.text
+                else:
+                    # 레거시 API 사용
+                    response = self.model.generate_content(prompt)
+                    response_text = response.text
 
                 # 응답 검증
-                if not response or not response.text:
+                if not response_text:
                     raise ValueError("Empty response from Gemini API")
 
-                return response.text.strip()
+                return response_text.strip()
 
             except Exception as e:
                 if attempt < max_retries - 1:

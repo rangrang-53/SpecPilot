@@ -1,0 +1,29 @@
+{
+  "scenario_name": "IoT 모니터링 대시보드",
+  "initial_input": "공장 설비 모니터링을 위한 IoT 대시보드를 만들고 싶습니다.\n\n주요 기능:\n- 실시간 센서 데이터 수집 (온도, 압력, 진동)\n- 데이터 시각화 (그래프, 차트)\n- 이상 알림 (임계값 초과 시)\n- 데이터 분석 및 보고서\n\n센서: 100개\n데이터 수집 주기: 1분마다",
+  "expected_questions": [
+    {
+      "question": "센서 데이터를 얼마나 오래 보관하시겠습니까?",
+      "answer": "최근 1년치는 상세 데이터로 보관하고, 그 이전 데이터는 시간별 평균으로 압축해서 보관하고 싶습니다."
+    },
+    {
+      "question": "이상 감지 시 어떻게 알림을 받으시겠습니까?",
+      "answer": "이메일과 SMS로 즉시 알림을 받고, 대시보드에도 빨간색으로 표시되었으면 좋겠습니다."
+    },
+    {
+      "question": "사용자 권한은 어떻게 관리하시겠습니까?",
+      "answer": "관리자는 모든 센서를 볼 수 있고, 일반 직원은 자기 담당 구역만 볼 수 있어야 합니다."
+    },
+    {
+      "question": "배포 환경은 어떻게 하시겠습니까?",
+      "answer": "사내 서버에 온프레미스로 배포하되, 클라우드 백업도 고려하고 있습니다."
+    }
+  ],
+  "expected_tech_stack": {
+    "backend": ["Node.js", "Express"],
+    "frontend": ["React", "Recharts"],
+    "database": ["InfluxDB", "PostgreSQL"],
+    "messaging": ["MQTT Broker"],
+    "infrastructure": ["Docker", "Kubernetes"]
+  }
+}

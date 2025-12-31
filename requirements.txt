@@ -1,8 +1,9 @@
-# LangChain & LangGraph
-langchain
-langgraph
-langchain-google-genai
-google-generativeai
+# LangChain & LangGraph (1.0+ versions)
+langchain>=1.2.0
+langgraph>=1.0.5
+langchain-google-genai>=4.0.0
+langchain-core>=1.0.0
+google-generativeai>=0.8.0
 
 # Web Framework (Streamlit only for single deployment)
 streamlit

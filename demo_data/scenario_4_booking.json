@@ -1,0 +1,29 @@
+{
+  "scenario_name": "PT 예약 시스템",
+  "initial_input": "헬스장 PT(개인 트레이닝) 예약 시스템을 만들고 싶습니다.\n\n주요 기능:\n- 강사별 스케줄 확인\n- PT 수업 예약/취소\n- 회원권 관리\n- 출석 체크\n- 결제 (정기 결제)\n\n예상 사용자: 회원 500명, 강사 20명",
+  "expected_questions": [
+    {
+      "question": "예약 취소는 몇 시간 전까지 가능한가요?",
+      "answer": "수업 시작 24시간 전까지만 취소 가능하고, 그 이후에는 회차가 차감됩니다."
+    },
+    {
+      "question": "회원권 정기 결제는 어떤 주기로 하시겠습니까?",
+      "answer": "월 단위 자동 결제이며, 신용카드만 지원합니다."
+    },
+    {
+      "question": "인증 방식은 어떻게 하시겠습니까?",
+      "answer": "휴대폰 번호 인증으로 가입하고, SMS 인증 코드로 로그인합니다."
+    },
+    {
+      "question": "배포 환경은 어떻게 하시겠습니까?",
+      "answer": "AWS에 배포하고, 모바일 앱도 필요합니다."
+    }
+  ],
+  "expected_tech_stack": {
+    "backend": ["Node.js", "Express"],
+    "frontend": ["React Native"],
+    "database": ["PostgreSQL", "Redis"],
+    "payment": ["정기결제 API", "PG 연동"],
+    "infrastructure": ["AWS", "Docker"]
+  }
+}

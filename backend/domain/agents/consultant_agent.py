@@ -5,6 +5,10 @@ from backend.infrastructure.prompts.consultant_prompt import (
     CONSULTANT_SYSTEM_PROMPT,
     get_consultant_prompt
 )
+from backend.utils.logger import setup_logger
+
+# 로거 설정
+logger = setup_logger(__name__)
 
 
 def consultant_agent(state: RequirementState) -> RequirementState:
@@ -75,9 +79,8 @@ def consultant_agent(state: RequirementState) -> RequirementState:
             )
 
     except Exception as e:
-        print(f"⚠️ Consultant Agent LLM error: {e}")
-        print(f"⚠️ Error details: {str(e)}")
-        print("⚠️ Falling back to default questions")
+        logger.exception("Consultant Agent LLM error occurred", exc_info=e)
+        logger.warning("Falling back to default questions")
 
         # Fallback: 기본 질문 사용
         default_questions = [

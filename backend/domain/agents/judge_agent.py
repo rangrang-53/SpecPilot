@@ -87,14 +87,19 @@ def judge_agent(state: RequirementState) -> RequirementState:
         feedback = " ".join(feedback_lines[:3])  # 최대 3줄
 
         # CRITICAL: LLM 응답에 상관없이 필수 항목 체크 수행
-        has_auth = "authentication" in state.collected_info
-        has_deployment = "deployment" in state.collected_info
-        has_scale = "scale" in state.collected_info
+        # 값이 존재하고 비어있지 않은지 확인
+        def has_valid_value(key: str) -> bool:
+            value = state.collected_info.get(key)
+            return value is not None and str(value).strip() and str(value).strip() != "지정되지 않음"
+
+        has_auth = has_valid_value("authentication")
+        has_deployment = has_valid_value("deployment")
+        has_scale = has_valid_value("scale")
 
         project_type = state.collected_info.get("project_type", "")
         needs_payment = any(keyword in str(project_type).lower()
                            for keyword in ["이커머스", "쇼핑", "예약", "결제"])
-        has_payment = "payment" in state.collected_info
+        has_payment = has_valid_value("payment")
 
         missing_items = []
         if not has_auth:
