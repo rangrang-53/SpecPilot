@@ -98,6 +98,79 @@ def consultant_agent(state: RequirementState) -> RequirementState:
     return state
 
 
+def _get_rule_based_example(question: str) -> str:
+    """
+    규칙 기반으로 자주 나오는 질문에 대한 예시 제공
+
+    Args:
+        question: 질문 문자열
+
+    Returns:
+        예시 문자열 또는 None
+    """
+    question_lower = question.lower()
+
+    # 인증 관련
+    if "인증" in question_lower or "로그인" in question_lower:
+        return "💡 예: 이메일/비밀번호, 카카오 로그인, 구글 로그인, 네이버 로그인 등"
+
+    # 결제 관련
+    if "결제" in question_lower or "pg" in question_lower or "페이먼트" in question_lower:
+        return "💡 예: 토스페이먼츠, KG이니시스, 카카오페이, 네이버페이 등"
+
+    # 배포 관련
+    if "배포" in question_lower or "서버" in question_lower or "클라우드" in question_lower:
+        return "💡 예: AWS, GCP, Azure, 네이버 클라우드, 온프레미스 등"
+
+    # 배송 관련
+    if "배송" in question_lower or "택배" in question_lower or "물류" in question_lower:
+        return "💡 예: 당일 배송, 익일 배송, 무료 배송(조건부), 배송비 3000원 등"
+
+    # 규모 관련
+    if "규모" in question_lower or "사용자" in question_lower or "트래픽" in question_lower:
+        return "💡 예: 월 1만명, 일 1000명, 동시 접속 100명 등"
+
+    # 데이터베이스 관련
+    if "데이터베이스" in question_lower or "db" in question_lower or "저장" in question_lower:
+        return "💡 예: PostgreSQL, MySQL, MongoDB, Redis 등"
+
+    # 모바일 관련
+    if "모바일" in question_lower or "앱" in question_lower:
+        return "💡 예: iOS/Android 네이티브, React Native, Flutter 등"
+
+    # 알림 관련
+    if "알림" in question_lower or "notification" in question_lower:
+        return "💡 예: 푸시 알림, 이메일, SMS, 카카오톡 알림톡 등"
+
+    return None
+
+
+def _get_fallback_example(question: str) -> str:
+    """
+    폴백 예시 생성 (모든 질문에 대해 기본 예시 제공)
+
+    Args:
+        question: 질문 문자열
+
+    Returns:
+        폴백 예시 문자열
+    """
+    question_lower = question.lower()
+
+    # 질문 키워드 기반 간단한 폴백
+    if "?" in question or "?" in question:
+        # 의문사 추출 시도
+        if "어떤" in question_lower or "무엇" in question_lower:
+            return "💡 예: 구체적인 옵션이나 선호하는 방식을 알려주세요"
+        elif "얼마" in question_lower or "몇" in question_lower:
+            return "💡 예: 대략적인 숫자나 범위를 알려주세요"
+        elif "언제" in question_lower:
+            return "💡 예: 예상 일정이나 기간을 알려주세요"
+
+    # 기본 폴백
+    return "💡 예: 자세히 설명해주시면 더 정확한 SRS를 만들 수 있습니다"
+
+
 def _get_example_hint_for_question(question: str, collected_info: dict) -> str:
     """
     LLM을 사용하여 질문에 맞는 간단한 예시 힌트 생성 (인라인용)
@@ -107,9 +180,16 @@ def _get_example_hint_for_question(question: str, collected_info: dict) -> str:
         collected_info: 수집된 정보
 
     Returns:
-        예시 힌트 문자열 (없으면 None)
+        예시 힌트 문자열 (없으면 폴백 예시 사용)
     """
     try:
+        # 먼저 규칙 기반 예시 시도
+        rule_based_example = _get_rule_based_example(question)
+        if rule_based_example:
+            logger.debug(f"Using rule-based example for: {question[:50]}...")
+            return rule_based_example
+
+        # 규칙 기반 예시가 없으면 LLM 사용
         llm_client = get_gemini_client()
 
         # 프로젝트 컨텍스트 정보
@@ -125,39 +205,39 @@ def _get_example_hint_for_question(question: str, collected_info: dict) -> str:
 
 요구사항:
 1. 한 줄로 3-5개의 구체적인 예시만 제공
-2. "💡 예:" 형식으로 시작
+2. "💡 예:" 형식으로 정확하게 시작
 3. 쉼표로 구분하고 마지막에 "등" 추가
-4. 질문 내용과 관련 없으면 "SKIP" 출력
+4. 반드시 예시를 제공하세요 (SKIP 금지)
 
 예시 형식:
 💡 예: 토스페이먼츠, KG이니시스, 카카오페이, 네이버페이 등
 
-예시를 생성하세요:"""
+위 형식을 정확히 따라 예시를 생성하세요:"""
 
         response = llm_client.generate(example_prompt)
         example_hint = response.strip()
 
-        print(f"[DEBUG] Question: {question}")
-        print(f"[DEBUG] LLM Response: {example_hint}")
-
-        # "SKIP"이면 예시 없음
-        if "SKIP" in example_hint.upper():
-            print("[DEBUG] SKIP detected")
-            return None
+        logger.debug(f"Question: {question[:50]}...")
+        logger.debug(f"LLM Response: {example_hint}")
 
         # "💡 예:"로 시작하는지 확인
-        if example_hint.startswith("💡 예:"):
-            print("[DEBUG] Valid format detected")
-            return example_hint
+        if "💡 예:" in example_hint:
+            # "💡 예:" 부분 추출
+            if example_hint.startswith("💡 예:"):
+                return example_hint
+            else:
+                # 중간에 있으면 해당 부분만 추출
+                example_start = example_hint.find("💡 예:")
+                return example_hint[example_start:]
         else:
-            # 형식이 맞지 않으면 None 반환
-            print("[DEBUG] Invalid format")
-            return None
+            # 형식이 맞지 않으면 폴백 예시 생성
+            logger.warning(f"Invalid format, using fallback for: {question[:50]}...")
+            return _get_fallback_example(question)
 
     except Exception as e:
-        # LLM 호출 실패 시 None 반환 (예시 없이 질문만 표시)
-        print(f"[DEBUG] Exception occurred: {type(e).__name__}")
-        return None
+        # LLM 호출 실패 시 폴백 예시 사용
+        logger.exception(f"Error generating example, using fallback", exc_info=e)
+        return _get_fallback_example(question)
 
 
 def _generate_example_response(last_question: str, collected_info: dict) -> str:
