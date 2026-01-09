@@ -547,33 +547,9 @@ We welcome contributions! Here's how you can help:
 
 ---
 
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-```
-MIT License
-
-Copyright (c) 2025 RANG
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-```
-
----
-
 ## 👥 Authors & Contributors
 
-**RANG** - *Initial work* - [GitHub Profile](https://github.com/your-username)
-
-See also the list of [contributors](https://github.com/your-username/SpecPilot/contributors) who participated in this project.
+**RANG** - *Initial work* - [GitHub Profile](https://github.com/rangrang-53)
 
 ---
 
@@ -588,9 +564,9 @@ See also the list of [contributors](https://github.com/your-username/SpecPilot/c
 
 ## 📧 Contact & Support
 
-- **Email**: your-email@example.com
-- **Issues**: [GitHub Issues](https://github.com/your-username/SpecPilot/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/your-username/SpecPilot/discussions)
+- **Email**: jr0503@naver.com
+- **Issues**: [GitHub Issues](https://github.com/rangrang-53/SpecPilot/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/rangrang-53/SpecPilot/discussions)
 
 ---
 
@@ -598,32 +574,12 @@ See also the list of [contributors](https://github.com/your-username/SpecPilot/c
 
 **Current Version**: v1.0.0
 **Status**: Active Development
-**Last Updated**: January 2025
-
----
-
-## ❓ FAQ
-
-### Q: API 키는 어디서 발급받나요?
-A: [Google AI Studio](https://makersuite.google.com/app/apikey)에서 무료로 발급 가능합니다.
-
-### Q: 오프라인에서도 사용 가능한가요?
-A: 아니요, Google Gemini API 호출이 필요하므로 인터넷 연결이 필수입니다.
-
-### Q: 영어로도 사용 가능한가요?
-A: 현재는 한국어만 지원하며, 다국어 지원은 v2.0에서 추가 예정입니다.
-
-### Q: 생성된 SRS는 어떻게 활용하나요?
-A: JSON/Markdown 형식으로 다운로드하여 Jira, Notion 등에서 활용 가능합니다.
+**Last Updated**: January 2026
 
 ---
 
 <div align="center">
 
 **SpecPilot** - "From Vague Ideas to Concrete Specs." ✈️
-
-Made with ❤️ by RANG
-
-[⬆ Back to top](#-specpilot-ai-powered-srs-generator)
 
 </div>

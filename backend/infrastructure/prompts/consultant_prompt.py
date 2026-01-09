@@ -35,11 +35,12 @@ Latest user response:
 **CRITICAL: NEVER repeat questions that appear in conversation history!**
 
 **PRIORITY RULES - Ask in this order:**
-1. If project is 이커머스/쇼핑/예약 and NO payment info → Ask about payment method (PG사)
-2. If NO authentication info → Ask about authentication method
-3. If NO scale info → Ask about expected user scale
-4. If NO deployment info → Ask about deployment environment
-5. Otherwise → Ask about other technical details
+1. SKIP if core_features already in collected_info
+2. If project is 이커머스/쇼핑/예약 and NO payment info → Ask about payment method (PG사)
+3. If NO authentication info → Ask about authentication method
+4. If NO scale info → Ask about expected user scale
+5. If NO deployment info → Ask about deployment environment
+6. Otherwise → Ask about other technical details (NOT core features)
 
 Generate ONE short question (max 15 words) about the HIGHEST PRIORITY missing information.
 Do NOT ask about anything already in collected_info OR conversation_history.

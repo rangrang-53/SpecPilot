@@ -12,6 +12,12 @@ import json
 import sys
 import argparse
 from pathlib import Path
+import os
+
+# Windows 콘솔 인코딩 설정
+if sys.platform == 'win32':
+    os.system('chcp 65001 > nul')
+    sys.stdout.reconfigure(encoding='utf-8')
 
 # 프로젝트 루트를 Python path에 추가
 sys.path.insert(0, str(Path(__file__).parent.parent))

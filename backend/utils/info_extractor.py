@@ -34,6 +34,10 @@ class InfoExtractor:
             "project_type": {
                 "keywords": ["쇼핑몰", "이커머스", "인트라넷", "사내", "그룹웨어", "SNS", "커뮤니티", "배달", "예약"],
                 "extractor": self._extract_project_type
+            },
+            "core_features": {
+                "keywords": ["기능", "주요", "필요", "지원", "포함"],
+                "extractor": self._extract_core_features
             }
         }
 
@@ -145,6 +149,35 @@ class InfoExtractor:
         for keyword, ptype in type_map.items():
             if keyword in text_lower:
                 return ptype
+        return None
+
+    def _extract_core_features(self, text: str) -> str:
+        """주요 기능 추출 - 리스트 형태로 명시된 기능들만 추출"""
+        if not text:
+            return None
+
+        # "주요 기능:", "기능:" 뒤에 나오는 불릿 리스트 추출
+        feature_patterns = [
+            r'주요\s*기능[:\s]*\n((?:[-\*]\s*.+\n?)+)',
+            r'기능[:\s]*\n((?:[-\*]\s*.+\n?)+)',
+        ]
+
+        for pattern in feature_patterns:
+            match = re.search(pattern, text)
+            if match:
+                features_text = match.group(1)
+                # 각 라인에서 기능만 추출 (불릿 제거)
+                features = []
+                for line in features_text.split('\n'):
+                    line = line.strip()
+                    if line.startswith('-') or line.startswith('*'):
+                        feature = line[1:].strip()
+                        if feature:
+                            features.append(feature)
+
+                if features:
+                    return ', '.join(features[:5])  # 최대 5개까지만
+
         return None
 
     def extract(self, text: str, existing_info: Dict[str, Any] = None) -> Dict[str, Any]:
