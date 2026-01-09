@@ -482,104 +482,67 @@ pytest tests/backend/test_infrastructure.py
 
 ---
 
-## 🔮 Roadmap
+## 🔮 로드맵
 
-### Version 2.0 (Q2 2025)
+### 버전 2.0 (2025년 2분기)
 
-- [ ] **Database Persistence**: PostgreSQL/Redis for session storage
-- [ ] **History Management**: View and reuse previous SRS documents
-- [ ] **Multi-language Support**: English, Korean, Japanese
-- [ ] **Export Formats**: PDF, DOCX, HTML
+- [ ] **데이터베이스 영속성**: PostgreSQL/Redis 기반 세션 저장
+- [ ] **히스토리 관리**: 이전 SRS 문서 조회 및 재사용
+- [ ] **다국어 지원**: 영어, 한국어, 일본어
+- [ ] **내보내기 형식**: PDF, DOCX, HTML
 
-### Version 3.0 (Q3 2025)
+### 버전 3.0 (2025년 3분기)
 
-- [ ] **Jira Integration**: Automatic Epic/Story creation from SRS
-- [ ] **Code Generation**: Project scaffolding from SRS
-- [ ] **Team Collaboration**: Multi-user SRS editing
-- [ ] **API Gateway**: RESTful API for third-party integrations
+- [ ] **Jira 연동**: SRS에서 Epic/Story 자동 생성
+- [ ] **코드 생성**: SRS 기반 프로젝트 스캐폴딩
+- [ ] **팀 협업**: 다중 사용자 SRS 편집
+- [ ] **API 게이트웨이**: 서드파티 통합을 위한 RESTful API
 
-### Long-term Vision
+### 장기 비전
 
-- [ ] **Custom Agent Training**: Train agents on company-specific templates
-- [ ] **Version Control**: Track SRS changes over time
-- [ ] **Analytics Dashboard**: Project metrics and insights
-- [ ] **Mobile App**: Native iOS/Android applications
-
----
-
-## 🤝 Contributing
-
-We welcome contributions! Here's how you can help:
-
-### Reporting Bugs
-
-1. Check if the bug has already been reported in [Issues](https://github.com/your-username/SpecPilot/issues)
-2. Create a new issue with:
-   - Clear title and description
-   - Steps to reproduce
-   - Expected vs actual behavior
-   - Screenshots (if applicable)
-
-### Suggesting Enhancements
-
-1. Open an issue with the `enhancement` label
-2. Describe the feature and its use case
-3. Explain why this would be useful
-
-### Pull Requests
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Make your changes
-4. Run tests (`pytest`)
-5. Format code (`black .`)
-6. Commit changes (`git commit -m 'Add amazing feature'`)
-7. Push to branch (`git push origin feature/amazing-feature`)
-8. Open a Pull Request
-
-### Code Style
-
-- Follow PEP 8 for Python code
-- Use Black for code formatting
-- Add type hints where applicable
-- Write docstrings for public functions
-- Include unit tests for new features
+- [ ] **커스텀 에이전트 학습**: 회사별 템플릿 기반 에이전트 훈련
+- [ ] **버전 관리**: SRS 변경 이력 추적
+- [ ] **분석 대시보드**: 프로젝트 메트릭 및 인사이트
+- [ ] **모바일 앱**: iOS/Android 네이티브 애플리케이션
 
 ---
 
-## 👥 Authors & Contributors
+## 👥 개발자
 
-**RANG** - *Initial work* - [GitHub Profile](https://github.com/rangrang-53)
-
----
-
-## 🙏 Acknowledgments
-
-- [LangChain](https://github.com/langchain-ai/langchain) - Framework for building LLM applications
-- [LangGraph](https://github.com/langchain-ai/langgraph) - Multi-agent workflow orchestration
-- [Google Gemini](https://deepmind.google/technologies/gemini/) - LLM provider
-- [Streamlit](https://streamlit.io/) - Web UI framework
+**RANG** - *프로젝트 생성* - [GitHub 프로필](https://github.com/rangrang-53)
 
 ---
 
-## 📧 Contact & Support
+## 🙏 감사의 말
 
-- **Email**: jr0503@naver.com
-- **Issues**: [GitHub Issues](https://github.com/rangrang-53/SpecPilot/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/rangrang-53/SpecPilot/discussions)
+- [Google Gemini](https://deepmind.google/technologies/gemini/) - LLM 제공
+- [Streamlit](https://streamlit.io/) - 웹 UI 프레임워크
+- [Pydantic](https://docs.pydantic.dev/) - 데이터 검증
 
 ---
 
-## 📊 Project Status
+## 📧 문의 및 지원
 
-**Current Version**: v1.0.0
-**Status**: Active Development
-**Last Updated**: January 2026
+- **이메일**: jr0503@naver.com
+- **이슈**: [GitHub Issues](https://github.com/rangrang-53/SpecPilot/issues)
+- **토론**: [GitHub Discussions](https://github.com/rangrang-53/SpecPilot/discussions)
+
+---
+
+## 📊 프로젝트 상태
+
+**현재 버전**: v1.0.0
+**상태**: 활발히 개발 중
+**최종 업데이트**: 2025년 1월
 
 ---
 
 <div align="center">
 
-**SpecPilot** - "From Vague Ideas to Concrete Specs." ✈️
+**SpecPilot** - "모호한 아이디어를 명확한 명세서로" ✈️
+
+Made with ❤️ by RANG
+
+[⬆ 맨 위로](#️-specpilot-ai-powered-srs-generator)
 
 </div>
