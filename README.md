@@ -3,9 +3,10 @@
 > **"From Vague Ideas to Concrete Specs."**
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
-[![LangChain](https://img.shields.io/badge/langchain-1.2.0-green.svg)](https://github.com/langchain-ai/langchain)
-[![LangGraph](https://img.shields.io/badge/langgraph-1.0.5+-orange.svg)](https://github.com/langchain-ai/langgraph)
+[![Google Gemini](https://img.shields.io/badge/Google-Gemini%202.0-4285F4.svg)](https://ai.google.dev/)
+[![Streamlit](https://img.shields.io/badge/Streamlit-1.29+-FF4B4B.svg)](https://streamlit.io/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 모호한 아이디어를 명확한 기술 명세서(SRS)로 자동 전환하는 Multi-Agent AI 시스템
 
@@ -597,7 +598,23 @@ See also the list of [contributors](https://github.com/your-username/SpecPilot/c
 
 **Current Version**: v1.0.0
 **Status**: Active Development
-**Last Updated**: December 2024
+**Last Updated**: January 2025
+
+---
+
+## ❓ FAQ
+
+### Q: API 키는 어디서 발급받나요?
+A: [Google AI Studio](https://makersuite.google.com/app/apikey)에서 무료로 발급 가능합니다.
+
+### Q: 오프라인에서도 사용 가능한가요?
+A: 아니요, Google Gemini API 호출이 필요하므로 인터넷 연결이 필수입니다.
+
+### Q: 영어로도 사용 가능한가요?
+A: 현재는 한국어만 지원하며, 다국어 지원은 v2.0에서 추가 예정입니다.
+
+### Q: 생성된 SRS는 어떻게 활용하나요?
+A: JSON/Markdown 형식으로 다운로드하여 Jira, Notion 등에서 활용 가능합니다.
 
 ---
 
